@@ -947,7 +947,7 @@
                 <strong>Deskripsi:</strong> {{ hw.description }}
               </div>
             </div>
-            {% for task in hw.tasks.all %}
+            {% for task in hw.enriched_tasks %}
             <details class="task-accordion">
               <summary>
                 <div class="summary-title">
