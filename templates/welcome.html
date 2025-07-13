@@ -1,0 +1,483 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --secondary-color: #10b981;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --bg-light: #f9fafb;
+        --bg-white: #ffffff;
+        --border-color: #e5e7eb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--bg-light);
+        color: var(--text-dark);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid #e8e8e8;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.mobile-hidden {
+        transform: translateX(-100%);
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 101;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .mobile-menu-toggle:hover {
+        background: #f8f8f8;
+      }
+
+      .mobile-menu-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #1a1a1a;
+        margin: 4px 0;
+        transition: 0.3s;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(-45deg) translate(-4px, 4px);
+      }
+
+      .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(45deg) translate(-4px, -4px);
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-overlay.active {
+        opacity: 1;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "📚";
+        font-size: 20px;
+      }
+
+      .auth-section {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 24px;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: #666;
+        font-weight: 400;
+      }
+
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .menu-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        color: #666;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        position: relative;
+      }
+
+      .menu-item:hover {
+        background: #f8f8f8;
+        color: #1a1a1a;
+      }
+
+      .menu-item-primary {
+        color: #1a1a1a;
+        font-weight: 600;
+        background: #f8f8f8;
+      }
+
+      .menu-item-primary:hover {
+        background: #f0f0f0;
+      }
+
+      .menu-item-ghost {
+        color: #666;
+        font-weight: 500;
+        margin-top: auto;
+      }
+
+      .menu-item-ghost:hover {
+        color: #dc2626;
+        background: #fef2f2;
+      }
+
+      .menu-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .menu-text {
+        flex: 1;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 40px;
+        margin-left: 240px;
+        background: var(--bg-light);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .header p {
+        font-size: 16px;
+        color: var(--text-light);
+        margin-top: 8px;
+      }
+
+      .welcome-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--bg-white);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        text-align: center;
+      }
+
+      .welcome-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+      }
+
+      .welcome-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 12px;
+      }
+
+      .welcome-message {
+        font-size: 16px;
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .mobile-menu-toggle {
+          display: block;
+        }
+
+        .mobile-overlay.active {
+          display: block;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 20px;
+          padding-top: 80px;
+        }
+
+        .header h2 {
+          font-size: 24px;
+        }
+
+        .welcome-container {
+          margin: 0 10px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h2 {
+          font-size: 20px;
+        }
+
+        .welcome-container {
+          padding: 16px;
+        }
+
+        .sidebar {
+          width: 280px;
+        }
+
+        .welcome-title {
+          font-size: 20px;
+        }
+
+        .welcome-message {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile Menu Toggle -->
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li
+        style="
+          background: #d1fae5;
+          padding: 10px;
+          margin-bottom: 10px;
+          border-radius: 6px;
+        "
+      >
+        {{ message }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="logo">EnglishKids</a>
+      </div>
+      <div class="auth-section">
+        {% if user.is_authenticated %}
+        <div class="user-info">
+          <span class="user-greeting">Hello,</span>
+          <span class="user-name">{{ user.username }}</span>
+        </div>
+        <a
+          href="{% url 'dashboard_redirect' %}"
+          class="menu-item menu-item-primary"
+        >
+          <span class="menu-icon">🏠</span>
+          <span class="menu-text">Dashboard</span>
+        </a>
+        <a href="{% url 'course_redirect' %}" class="menu-item">
+          <span class="menu-icon">📖</span>
+          <span class="menu-text">Courses</span>
+        </a>
+        <a href="{% url 'homework_list' %}" class="menu-item">
+          <span class="menu-icon">📝</span>
+          <span class="menu-text">Homework</span>
+        </a>
+        <a href="{% url 'profile' %}" class="menu-item">
+          <span class="menu-icon">🙂</span>
+          <span class="menu-text">Profile</span>
+        </a>
+        {% if user.is_superuser %}
+        <a href="/admin/" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-text">Admin</span>
+        </a>
+        {% endif %}
+        <form
+          action="{% url 'logout' %}"
+          method="post"
+          style="display: contents"
+        >
+          {% csrf_token %}
+          <button type="submit" class="menu-item menu-item-ghost">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">Logout</span>
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Login</span>
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+        <div class="header">
+          <h2>Selamat Datang, {{ user.username }}!</h2>
+          <p>Siap untuk petualangan belajar bahasa Inggris yang seru?</p>
+        </div>
+
+        <div class="welcome-container">
+          <div class="welcome-icon">🎉</div>
+          <div class="welcome-title">
+            Halo, {{ user.first_name|default:user.username }}!
+          </div>
+          <div class="welcome-message">
+            Selamat datang di EnglishKids LMS! Di sini kamu bisa belajar bahasa
+            Inggris dengan cara yang menyenangkan. Cek kursusmu, selesaikan
+            tugas, dan lihat progres belajarmu. Ayo mulai petualanganmu
+            sekarang!
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const sidebar = document.getElementById("sidebar");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+          mobileMenuToggle.classList.toggle("active");
+          sidebar.classList.toggle("mobile-open");
+          mobileOverlay.classList.toggle("active");
+        }
+
+        function closeMobileMenu() {
+          mobileMenuToggle.classList.remove("active");
+          sidebar.classList.remove("mobile-open");
+          mobileOverlay.classList.remove("active");
+        }
+
+        mobileMenuToggle.addEventListener("click", toggleMobileMenu);
+        mobileOverlay.addEventListener("click", closeMobileMenu);
+
+        const sidebarLinks = sidebar.querySelectorAll(".menu-item");
+        sidebarLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+              closeMobileMenu();
+            }
+          });
+        });
+
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+            closeMobileMenu();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

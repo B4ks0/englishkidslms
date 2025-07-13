@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halaman Tidak Ditemukan - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      .header-nav {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 20px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+      }
+
+      .auth-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .btn-nav {
+        padding: 8px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        color: #333;
+      }
+
+      .btn-nav:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-nav-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .btn-nav-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      .btn-nav-ghost {
+        background: none;
+        color: #666;
+        border: none;
+        padding: 5px 10px;
+        font-size: 13px;
+      }
+
+      .btn-nav-ghost:hover {
+        color: #333;
+        background: #f8f8f8;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+      }
+
+      .error-container {
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        padding: 0 20px;
+      }
+
+      .error-card {
+        background: white;
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        padding: 60px 40px;
+        transition: all 0.2s ease;
+      }
+
+      .error-card:hover {
+        border-color: #e0e0e0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .error-icon {
+        font-size: 80px;
+        margin-bottom: 24px;
+        display: block;
+        animation: bounce 2s ease-in-out infinite;
+      }
+
+      .error-code {
+        font-size: 72px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 16px;
+        letter-spacing: -2px;
+      }
+
+      .error-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 16px;
+      }
+
+      .error-description {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 32px;
+        line-height: 1.6;
+      }
+
+      .error-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-align: center;
+        justify-content: center;
+        background: white;
+        color: #333;
+      }
+
+      .btn:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .btn-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: #333;
+        border: 1px solid #e0e0e0;
+      }
+
+      .btn-outline:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .search-section {
+        margin-top: 40px;
+        padding-top: 40px;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .search-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 16px;
+      }
+
+      .search-form {
+        display: flex;
+        gap: 12px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 10px 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        background: white;
+        color: #333;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #333;
+      }
+
+      .search-input::placeholder {
+        color: #999;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        60% {
+          transform: translateY(-5px);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .auth-section {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .error-card {
+          padding: 40px 20px;
+        }
+
+        .error-code {
+          font-size: 60px;
+        }
+
+        .error-title {
+          font-size: 28px;
+        }
+
+        .error-actions {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .btn {
+          width: 100%;
+          max-width: 200px;
+        }
+
+        .search-form {
+          flex-direction: column;
+        }
+
+        .search-input {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .error-icon {
+          font-size: 60px;
+        }
+
+        .error-code {
+          font-size: 48px;
+        }
+
+        .error-title {
+          font-size: 24px;
+        }
+
+        .main {
+          padding: 20px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main">
+      <div class="error-container">
+        <div class="error-card">
+          <div class="error-icon">😢</div>
+          <div class="error-code">404</div>
+          <h2 class="error-title">Halaman Tidak Ditemukan</h2>
+          <p class="error-description">
+            Sepertinya halaman yang kamu cari tidak ada atau telah dipindahkan.
+            Jangan khawatir, mari kita bantu kamu menemukan jalan yang tepat!
+          </p>
+
+          <div class="error-actions">
+            <a href="/" class="btn btn-primary"> 🏠 Kembali ke Beranda </a>
+            <a href="/courses/" class="btn btn-outline">
+              📚 Lihat Semua Course
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
