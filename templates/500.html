@@ -5,7 +5,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Halaman Tidak Ditemukan - EnglishKids LMS</title>
+    <title>Error Server - EnglishKids LMS</title>
     <link
       rel="icon"
       type="image/x-icon"
@@ -149,7 +149,7 @@
         font-size: 80px;
         margin-bottom: 24px;
         display: block;
-        animation: bounce 2s ease-in-out infinite;
+        animation: pulse 2s ease-in-out infinite;
       }
 
       .error-code {
@@ -215,19 +215,15 @@
         border-color: #d0d0d0;
       }
 
-      @keyframes bounce {
-        0%,
-        20%,
-        50%,
-        80%,
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
         100% {
-          transform: translateY(0);
-        }
-        40% {
-          transform: translateY(-10px);
-        }
-        60% {
-          transform: translateY(-5px);
+          transform: scale(1);
         }
       }
 
@@ -287,24 +283,25 @@
     </style>
   </head>
   <body>
+
     <!-- Main Content -->
     <main class="main">
       <div class="error-container">
         <div class="error-card">
-          <div class="error-icon">😢</div>
-          <div class="error-code">404</div>
-          <h2 class="error-title">Halaman Tidak Ditemukan</h2>
+          <div class="error-icon">😰</div>
+          <div class="error-code">500</div>
+          <h2 class="error-title">Error Server</h2>
           <p class="error-description">
-            Sepertinya halaman yang kamu cari tidak ada atau telah dipindahkan.
-            Jangan khawatir, mari kita bantu kamu menemukan jalan yang tepat!
+            Maaf, terjadi kesalahan pada server kami. Tim kami sedang bekerja untuk memperbaiki masalah ini.
+            Silakan coba lagi dalam beberapa saat.
           </p>
 
           <div class="error-actions">
             <a href="/" class="cta-button">🏠 Kembali ke Beranda</a>
-            <a href="/courses/" class="btn-outline">📚 Lihat Semua Course</a>
+            <a href="javascript:location.reload()" class="btn-outline">🔄 Muat Ulang Halaman</a>
           </div>
         </div>
       </div>
     </main>
   </body>
-</html>
+</html> 

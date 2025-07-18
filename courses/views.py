@@ -8,7 +8,7 @@ import re
 
 # Google Gemini
 from google import genai
-client = genai.Client(api_key="AIzaSyDiEHMNpXl_5kTccPLBEIO0q7-FMkVlCH0")
+client = genai.Client(api_key="AIzaSyDNX6Kg09Y7Vb673lo5aZK6VQZ4nfIBA9U")
 
 @login_required
 def course_list(request):

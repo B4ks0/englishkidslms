@@ -464,6 +464,213 @@
             sekarang!
           </div>
         </div>
+
+        <!-- Kalender Modern Minimalis -->
+        <div class="calendar-container" id="calendarContainer"></div>
+
+        <style>
+          .calendar-container {
+            margin: 40px auto 0 auto;
+            max-width: 520px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 36px 28px 28px 28px;
+            font-family: 'Inter', sans-serif;
+            color: #222;
+            border: 1px solid #f0f0f0;
+          }
+          .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+          }
+          .calendar-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+          }
+          .calendar-nav-btn {
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #4f46e5;
+            transition: background 0.2s;
+          }
+          .calendar-nav-btn:hover {
+            background: #e0e7ff;
+          }
+          .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+          }
+          .calendar-table th,
+          .calendar-table td {
+            width: 14.28%;
+            text-align: center;
+            padding: 16px 0;
+            font-size: 20px;
+            border-radius: 10px;
+            transition: background 0.2s, color 0.2s;
+          }
+          .calendar-table th {
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 15px;
+            background: none;
+            border: none;
+            padding: 10px 0;
+          }
+          .calendar-table td {
+            cursor: pointer;
+            background: none;
+            border: none;
+          }
+          .calendar-table td.today {
+            background: #4f46e5;
+            color: #fff;
+            font-weight: 700;
+          }
+          .calendar-table td.selected {
+            background: #e0e7ff;
+            color: #4f46e5;
+            font-weight: 700;
+          }
+          .calendar-table td:hover:not(.today):not(.selected) {
+            background: #f3f4f6;
+          }
+          @media (max-width: 700px) {
+            .calendar-container {
+              max-width: 100%;
+              padding: 12px 2px 8px 2px;
+            }
+            .calendar-title {
+              font-size: 17px;
+            }
+            .calendar-table th, .calendar-table td {
+              font-size: 13px;
+              padding: 7px 0;
+            }
+          }
+        </style>
+        <script>
+          function renderCalendar(containerId) {
+            const container = document.getElementById(containerId);
+            const today = new Date();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
+            let selectedDay = null;
+
+            function getMonthName(month, year) {
+              const date = new Date(year, month, 1);
+              return date.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+            }
+
+            function daysInMonth(month, year) {
+              return new Date(year, month + 1, 0).getDate();
+            }
+
+            function render() {
+              container.innerHTML = '';
+              // Header
+              const header = document.createElement('div');
+              header.className = 'calendar-header';
+              const prevBtn = document.createElement('button');
+              prevBtn.className = 'calendar-nav-btn';
+              prevBtn.innerHTML = '‹';
+              prevBtn.onclick = () => {
+                if (currentMonth === 0) {
+                  currentMonth = 11;
+                  currentYear--;
+                } else {
+                  currentMonth--;
+                }
+                render();
+              };
+              const nextBtn = document.createElement('button');
+              nextBtn.className = 'calendar-nav-btn';
+              nextBtn.innerHTML = '›';
+              nextBtn.onclick = () => {
+                if (currentMonth === 11) {
+                  currentMonth = 0;
+                  currentYear++;
+                } else {
+                  currentMonth++;
+                }
+                render();
+              };
+              const title = document.createElement('div');
+              title.className = 'calendar-title';
+              title.textContent = getMonthName(currentMonth, currentYear);
+              header.appendChild(prevBtn);
+              header.appendChild(title);
+              header.appendChild(nextBtn);
+              container.appendChild(header);
+              // Table
+              const table = document.createElement('table');
+              table.className = 'calendar-table';
+              const thead = document.createElement('thead');
+              const tr = document.createElement('tr');
+              const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+              days.forEach(day => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                tr.appendChild(th);
+              });
+              thead.appendChild(tr);
+              table.appendChild(thead);
+              const tbody = document.createElement('tbody');
+              const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+              const totalDays = daysInMonth(currentMonth, currentYear);
+              let date = 1;
+              for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 7; j++) {
+                  const cell = document.createElement('td');
+                  if (i === 0 && j < firstDay) {
+                    cell.textContent = '';
+                  } else if (date > totalDays) {
+                    cell.textContent = '';
+                  } else {
+                    cell.textContent = date;
+                    const isToday =
+                      date === today.getDate() &&
+                      currentMonth === today.getMonth() &&
+                      currentYear === today.getFullYear();
+                    if (isToday) cell.classList.add('today');
+                    if (
+                      selectedDay &&
+                      date === selectedDay.getDate() &&
+                      currentMonth === selectedDay.getMonth() &&
+                      currentYear === selectedDay.getFullYear()
+                    ) {
+                      cell.classList.add('selected');
+                    }
+                    cell.onclick = function () {
+                      selectedDay = new Date(currentYear, currentMonth, date);
+                      render();
+                    };
+                    date++;
+                  }
+                  row.appendChild(cell);
+                }
+                tbody.appendChild(row);
+              }
+              table.appendChild(tbody);
+              container.appendChild(table);
+            }
+            render();
+          }
+          document.addEventListener('DOMContentLoaded', function () {
+            renderCalendar('calendarContainer');
+          });
+        </script>
+
       </div>
     </main>
 
