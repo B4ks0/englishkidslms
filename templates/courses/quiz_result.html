@@ -1,0 +1,833 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Kuis - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      .header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 20px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .btn {
+        padding: 8px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        color: #333;
+      }
+
+      .btn:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .btn-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 60px 0;
+      }
+
+      .results-container {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .results-header {
+        margin-bottom: 40px;
+      }
+
+      .results-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        display: block;
+        animation: bounce 2s ease-in-out infinite;
+      }
+
+      .results-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .course-name {
+        font-size: 18px;
+        color: #666;
+        font-weight: 500;
+      }
+
+      .score-display {
+        margin-bottom: 40px;
+      }
+
+      .score-main {
+        font-size: 80px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 12px;
+        line-height: 1;
+      }
+
+      .score-text {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 24px;
+      }
+
+      .performance-badge {
+        display: inline-block;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 32px;
+        border: 2px solid;
+      }
+
+      .performance-excellent {
+        color: #16a34a;
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+
+      .performance-good {
+        color: #2563eb;
+        background: #eff6ff;
+        border-color: #bfdbfe;
+      }
+
+      .performance-needs-improvement {
+        color: #ea580c;
+        background: #fff7ed;
+        border-color: #fed7aa;
+      }
+
+      .performance-poor {
+        color: #dc2626;
+        background: #fef2f2;
+        border-color: #fecaca;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+
+      .stat-card {
+        background: #f8f9fa;
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+      }
+
+      .stat-card:hover {
+        background: #f5f5f5;
+      }
+
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+      }
+
+      .encouragement {
+        background: #f8f9fa;
+        padding: 24px;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        border-left: 4px solid #333;
+        text-align: left;
+      }
+
+      .encouragement p {
+        color: #555;
+        line-height: 1.6;
+        font-size: 16px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn-large {
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #e0e0e0;
+        background: white;
+        color: #333;
+      }
+
+      .btn-large:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-large.btn-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .btn-large.btn-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      /* Loading Animation */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .loading-container {
+        text-align: center;
+        padding: 40px;
+      }
+
+      .loading-animation {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+      }
+
+      .book-loader {
+        position: absolute;
+        width: 60px;
+        height: 45px;
+        border: 3px solid #333;
+        border-radius: 3px;
+        background: white;
+        animation: bookFlip 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: #333;
+        border-radius: 2px;
+        animation: lineGrow 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::after {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 8px;
+        right: 20px;
+        height: 2px;
+        background: #666;
+        border-radius: 1px;
+        animation: lineGrow 1.5s infinite ease-in-out 0.2s;
+      }
+
+      .page-flip {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        width: 30px;
+        height: 45px;
+        background: #f8f8f8;
+        border: 3px solid #333;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+        transform-origin: left center;
+        animation: pageFlip 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        opacity: 0;
+        animation: floatLetters 2s infinite ease-in-out;
+      }
+
+      .floating-letters span {
+        display: inline-block;
+        margin: 0 2px;
+        animation: bounceLetters 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .floating-letters span:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .floating-letters span:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .floating-letters span:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .loading-subtext {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+
+      .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .loading-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #333;
+        animation: dotPulse 1.5s infinite ease-in-out;
+      }
+
+      .loading-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .loading-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes bookFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-25deg);
+        }
+      }
+
+      @keyframes pageFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-180deg);
+        }
+      }
+
+      @keyframes lineGrow {
+        0%,
+        100% {
+          width: 20px;
+          opacity: 0.3;
+        }
+        50% {
+          width: 35px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes floatLetters {
+        0%,
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-10px);
+        }
+      }
+
+      @keyframes bounceLetters {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes dotPulse {
+        0%,
+        100% {
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      .confetti-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        animation: confetti-fall 3s linear infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        60% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .results-container {
+          padding: 0 20px;
+        }
+
+        .results-title {
+          font-size: 28px;
+        }
+
+        .course-name {
+          font-size: 16px;
+        }
+
+        .score-main {
+          font-size: 64px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .actions {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .btn-large {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .loading-animation {
+          width: 60px;
+          height: 60px;
+        }
+
+        .book-loader {
+          width: 45px;
+          height: 35px;
+        }
+
+        .page-flip {
+          left: 22px;
+          width: 23px;
+          height: 35px;
+        }
+      }
+
+      .toast-progress {
+        position: absolute;
+        left: 0; bottom: 0; right: 0;
+        height: 4px;
+        background: rgba(255,255,255,0.85);
+        border-radius: 0 0 12px 12px;
+        width: 100%;
+        animation: toastProgressBar 4s linear forwards;
+      }
+      #toast-homework-success { position:fixed; overflow:hidden; }
+      @keyframes toastProgressBar {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+    </style>
+  </head>
+  <body>
+    {% if show_homework_toast %}
+    <div id="toast-homework-success" style="position:fixed;top:32px;right:32px;z-index:9999;min-width:280px;max-width:90vw;background:#16a34a;color:white;padding:18px 32px 28px 32px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);font-size:16px;display:flex;align-items:center;gap:12px;animation:fadeInDown 0.6s;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;width:100%;">
+        <span style="font-size:22px;">🎉</span>
+        <span><strong>Hore! </strong>Kamu berhasil menyelesaikan tugas quiz dari homework! Selamat! 🥳</span>
+      </div>
+      <div class="toast-progress"></div>
+    </div>
+    <style>
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeOutUp {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-40px); }
+      }
+    </style>
+    <script>
+      setTimeout(function() {
+        var toast = document.getElementById('toast-homework-success');
+        if (toast) {
+          toast.style.animation = 'fadeOutUp 0.6s';
+          setTimeout(function() { toast.remove(); }, 600);
+        }
+      }, 4000);
+    </script>
+    {% endif %}
+    <main class="main">
+      <div class="container">
+        <div class="results-container">
+          <div class="results-header">
+            <span class="results-icon" id="resultIcon">🎯</span>
+            <h1 class="results-title">Quiz Results</h1>
+            <div class="course-name">{{ course.name }}</div>
+          </div>
+
+          <div class="score-display">
+            <div class="score-main">{{ percentage }}%</div>
+            <div class="score-text">
+              <strong>{{ score }} dari {{ total }}</strong> jawaban benar
+            </div>
+            <div class="performance-badge" id="performanceBadge">
+              <span id="performanceText">Calculating...</span>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">{{ score }}</div>
+              <div class="stat-label">Benar</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="wrongAnswers">0</div>
+              <div class="stat-label">Salah</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ total }}</div>
+              <div class="stat-label">Total</div>
+            </div>
+          </div>
+
+          <div class="encouragement" id="encouragement">
+            <p id="encouragementText">Loading...</p>
+          </div>
+
+          <div class="actions">
+            <a href="{% url 'homework_list' %}" class="btn-large btn-primary">
+              📚 Kembali
+            </a>
+            <a
+              href="{% url 'quiz_generate' course.id %}"
+              class="btn-large"
+              onclick="retakeQuiz(event)"
+            >
+              🔄 Ulangi Kuis
+            </a>
+            <a href="{% url 'quiz_review' course.id %}" class="btn-large">
+              📄 Lihat Hasil
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-container">
+          <div class="loading-animation">
+            <div class="book-loader">
+              <div class="page-flip"></div>
+            </div>
+            <div class="floating-letters">
+              <span>Q</span>
+              <span>U</span>
+              <span>I</span>
+              <span>Z</span>
+            </div>
+          </div>
+          <div class="loading-text">Preparing Quiz...</div>
+          <div class="loading-subtext" id="loadingSubtext">
+            Getting ready for your learning adventure!
+          </div>
+          <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="confetti" id="confetti"></div>
+    </main>
+
+    <script>
+      const percentage = {{ percentage }};
+      const score = {{ score }};
+      const total = {{ total }};
+
+      function setPerformanceContent() {
+        const performanceBadge = document.getElementById('performanceBadge');
+        const performanceText = document.getElementById('performanceText');
+        const encouragementText = document.getElementById('encouragementText');
+        const resultIcon = document.getElementById('resultIcon');
+        const wrongAnswers = document.getElementById('wrongAnswers');
+
+        const wrongCount = total - score;
+        wrongAnswers.textContent = wrongCount;
+
+        if (percentage >= 90) {
+          performanceBadge.className = 'performance-badge performance-excellent';
+          performanceText.textContent = '🏆 Excellent!';
+          encouragementText.textContent = 'Luar biasa! Kamu benar-benar menguasai materi ini. Teruskan semangat belajarnya ya! 🌟';
+          resultIcon.textContent = '🏆';
+          createConfetti();
+        } else if (percentage >= 75) {
+          performanceBadge.className = 'performance-badge performance-good';
+          performanceText.textContent = '👍 Good Job!';
+          encouragementText.textContent = 'Kerja bagus! Kamu sudah memahami sebagian besar materi. Dengan sedikit latihan lagi, kamu pasti bisa lebih baik! 💪';
+          resultIcon.textContent = '👍';
+        } else if (percentage >= 60) {
+          performanceBadge.className = 'performance-badge performance-needs-improvement';
+          performanceText.textContent = '📈 Keep Learning!';
+          encouragementText.textContent = 'Tidak apa-apa, kamu sudah berusaha dengan baik! Coba belajar lagi dan ulangi kuisnya. Kamu pasti bisa lebih baik! 😊';
+          resultIcon.textContent = '📈';
+        } else {
+          performanceBadge.className = 'performance-badge performance-poor';
+          performanceText.textContent = '💪 Keep Trying!';
+          encouragementText.textContent = 'Jangan patah semangat! Setiap orang belajar dengan kecepatan berbeda. Coba pelajari materinya lagi dan ulangi kuisnya. Kamu pasti bisa! 🌈';
+          resultIcon.textContent = '💪';
+        }
+      }
+
+      function createConfetti() {
+        const confettiContainer = document.getElementById('confetti');
+        const colors = ['#333', '#666', '#999', '#4CAF50', '#2196F3', '#FF9800'];
+
+        for (let i = 0; i < 30; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti-piece';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = Math.random() * 3 + 's';
+          confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+          confettiContainer.appendChild(confetti);
+        }
+
+        setTimeout(() => {
+          confettiContainer.innerHTML = '';
+        }, 5000);
+      }
+
+      function retakeQuiz(event) {
+        event.preventDefault(); // Prevent immediate redirect
+        const confirmed = confirm('Apakah kamu yakin ingin mengulang kuis ini? 🤔');
+        if (confirmed) {
+          const loadingOverlay = document.getElementById('loadingOverlay');
+          const loadingSubtext = document.getElementById('loadingSubtext');
+          const loadingMessages = [
+            'Getting ready for your learning adventure!',
+            'Preparing your personalized quiz...',
+            'Loading fun questions just for you!',
+            'Almost ready to test your knowledge!',
+            'Setting up your English challenge!'
+          ];
+
+          // Show loading overlay
+          loadingOverlay.classList.add('active');
+          loadingSubtext.textContent = 'Preparing {{ course.name }} quiz...';
+
+          // Cycle through loading messages
+          let messageIndex = 0;
+          const messageInterval = setInterval(() => {
+            messageIndex = (messageIndex + 1) % loadingMessages.length;
+            loadingSubtext.textContent = loadingMessages[messageIndex];
+          }, 1000);
+
+          // Redirect after 2 seconds
+          setTimeout(() => {
+            clearInterval(messageInterval);
+            window.location.href = "{% url 'quiz_generate' course.id %}";
+          }, 2000);
+        }
+        return false; // Prevent default action if not confirmed
+      }
+
+      function shareResults() {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Hasil Kuis EnglishKids',
+            text: `Aku berhasil mendapat skor ${percentage}% di kuis {{ course.name }}! 🎉`,
+            url: window.location.href
+          });
+        } else {
+          const text = `Aku berhasil mendapat skor ${percentage}% di kuis {{ course.name }}! 🎉`;
+          navigator.clipboard.writeText(text).then(() => {
+            alert('Hasil berhasil disalin ke clipboard! 📋');
+          });
+        }
+      }
+
+      // Initialize
+      setPerformanceContent();
+    </script>
+  </body>
+</html>

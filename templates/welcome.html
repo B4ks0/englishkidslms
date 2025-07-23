@@ -1,0 +1,732 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - EnglishKids LMS</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --secondary-color: #10b981;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --bg-light: #f9fafb;
+        --bg-white: #ffffff;
+        --border-color: #e5e7eb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--bg-light);
+        color: var(--text-dark);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid #e8e8e8;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.mobile-hidden {
+        transform: translateX(-100%);
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 101;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .mobile-menu-toggle:hover {
+        background: #f8f8f8;
+      }
+
+      .mobile-menu-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #1a1a1a;
+        margin: 4px 0;
+        transition: 0.3s;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(-45deg) translate(-4px, 4px);
+      }
+
+      .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(45deg) translate(-4px, -4px);
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-overlay.active {
+        opacity: 1;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "📚";
+        font-size: 20px;
+      }
+
+      .auth-section {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 24px;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: #666;
+        font-weight: 400;
+      }
+
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .menu-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        color: #666;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        position: relative;
+      }
+
+      .menu-item:hover {
+        background: #f8f8f8;
+        color: #1a1a1a;
+      }
+
+      .menu-item-primary {
+        color: #1a1a1a;
+        font-weight: 600;
+        background: #f8f8f8;
+      }
+
+      .menu-item-primary:hover {
+        background: #f0f0f0;
+      }
+
+      .menu-item-ghost {
+        color: #666;
+        font-weight: 500;
+        margin-top: auto;
+      }
+
+      .menu-item-ghost:hover {
+        color: #dc2626;
+        background: #fef2f2;
+      }
+
+      .menu-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .menu-text {
+        flex: 1;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 40px;
+        margin-left: 240px;
+        background: var(--bg-light);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .header p {
+        font-size: 16px;
+        color: var(--text-light);
+        margin-top: 8px;
+      }
+
+      .welcome-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--bg-white);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        text-align: center;
+      }
+
+      .welcome-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+      }
+
+      .welcome-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 12px;
+      }
+
+      .welcome-message {
+        font-size: 16px;
+        color: var(--text-light);
+        line-height: 1.6;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .mobile-menu-toggle {
+          display: block;
+        }
+
+        .mobile-overlay.active {
+          display: block;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 20px;
+          padding-top: 80px;
+        }
+
+        .header h2 {
+          font-size: 24px;
+        }
+
+        .welcome-container {
+          margin: 0 10px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h2 {
+          font-size: 20px;
+        }
+
+        .welcome-container {
+          padding: 16px;
+        }
+
+        .sidebar {
+          width: 280px;
+        }
+
+        .welcome-title {
+          font-size: 20px;
+        }
+
+        .welcome-message {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile Menu Toggle -->
+    {% if show_login_toast or show_approved_toast %}
+    <div style="position:fixed;top:32px;right:32px;z-index:9999;display:flex;flex-direction:column;gap:16px;align-items:flex-end;min-width:280px;max-width:90vw;">
+      {% if show_login_toast %}
+      <div id="toast-login-success" style="background:#16a34a;color:white;padding:18px 32px 28px 32px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);font-size:16px;display:flex;align-items:center;gap:12px;animation:fadeInDown 0.6s;flex-direction:column;min-width:280px;max-width:90vw;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <span style="font-size:22px;">🎉</span>
+          <span><strong>Yey berhasil login! Selamat datang, {{ user.username }}!</strong></span>
+        </div>
+        <div class="toast-progress"></div>
+      </div>
+      {% endif %}
+      {% if show_approved_toast %}
+      <div id="toast-approved-success" style="background:#f59e42;color:white;padding:18px 32px 28px 32px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);font-size:16px;display:flex;align-items:center;gap:12px;animation:fadeInDown 0.6s;flex-direction:column;min-width:280px;max-width:90vw;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <span style="font-size:22px;">✅</span>
+          <span><strong>Selamat, akunmu sudah di-ACC admin!</strong></span>
+        </div>
+        <div class="toast-progress" style="background:rgba(255,255,255,0.85);"></div>
+      </div>
+      {% endif %}
+    </div>
+    <style>
+      .toast-progress {
+        position: absolute;
+        left: 0; bottom: 0; right: 0;
+        height: 4px;
+        background: rgba(255,255,255,0.85);
+        border-radius: 0 0 12px 12px;
+        width: 100%;
+        animation: toastProgressBar 4s linear forwards;
+      }
+      #toast-login-success, #toast-approved-success { position:relative; overflow:hidden; }
+      @keyframes toastProgressBar {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeOutUp {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-40px); }
+      }
+    </style>
+    <script>
+      setTimeout(function() {
+        var toast1 = document.getElementById('toast-login-success');
+        if (toast1) {
+          toast1.style.animation = 'fadeOutUp 0.6s';
+          setTimeout(function() { toast1.remove(); }, 600);
+        }
+        var toast2 = document.getElementById('toast-approved-success');
+        if (toast2) {
+          toast2.style.animation = 'fadeOutUp 0.6s';
+          setTimeout(function() { toast2.remove(); }, 600);
+        }
+      }, 4000);
+    </script>
+    {% endif %}
+
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="logo">EnglishKids</a>
+      </div>
+      <div class="auth-section">
+        {% if user.is_authenticated %}
+        <div class="user-info">
+          <span class="user-greeting">Hello,</span>
+          <span class="user-name">{{ user.username }}</span>
+        </div>
+        <a
+          href="{% url 'dashboard_redirect' %}"
+          class="menu-item menu-item-primary"
+        >
+          <span class="menu-icon">🏠</span>
+          <span class="menu-text">Dashboard</span>
+        </a>
+        <a href="{% url 'course_redirect' %}" class="menu-item">
+          <span class="menu-icon">📖</span>
+          <span class="menu-text">Courses</span>
+        </a>
+        <a href="{% url 'homework_list' %}" class="menu-item">
+          <span class="menu-icon">📝</span>
+          <span class="menu-text">Homework</span>
+        </a>
+        <a href="{% url 'profile' %}" class="menu-item">
+          <span class="menu-icon">🙂</span>
+          <span class="menu-text">Profile</span>
+        </a>
+        {% if user.is_superuser %}
+        <a href="/admin/" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-text">Admin</span>
+        </a>
+        {% endif %}
+        <form
+          action="{% url 'logout' %}"
+          method="post"
+          style="display: contents"
+        >
+          {% csrf_token %}
+          <button type="submit" class="menu-item menu-item-ghost">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">Logout</span>
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Login</span>
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+        <div class="header">
+          <h2>Selamat Datang, {{ user.username }}!</h2>
+          <p>Siap untuk petualangan belajar bahasa Inggris yang seru?</p>
+        </div>
+
+        <div class="welcome-container">
+          <div class="welcome-icon">🎉</div>
+          <div class="welcome-title">
+            Halo, {{ user.first_name|default:user.username }}!
+          </div>
+          <div class="welcome-message">
+            Selamat datang di EnglishKids LMS! Di sini kamu bisa belajar bahasa
+            Inggris dengan cara yang menyenangkan. Cek kursusmu, selesaikan
+            tugas, dan lihat progres belajarmu. Ayo mulai petualanganmu
+            sekarang!
+          </div>
+        </div>
+
+        <!-- Kalender Modern Minimalis -->
+        <div class="calendar-container" id="calendarContainer"></div>
+
+        <style>
+          .calendar-container {
+            margin: 40px auto 0 auto;
+            max-width: 520px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 36px 28px 28px 28px;
+            font-family: 'Inter', sans-serif;
+            color: #222;
+            border: 1px solid #f0f0f0;
+          }
+          .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+          }
+          .calendar-title {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+          }
+          .calendar-nav-btn {
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #4f46e5;
+            transition: background 0.2s;
+          }
+          .calendar-nav-btn:hover {
+            background: #e0e7ff;
+          }
+          .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+          }
+          .calendar-table th,
+          .calendar-table td {
+            width: 14.28%;
+            text-align: center;
+            padding: 16px 0;
+            font-size: 20px;
+            border-radius: 10px;
+            transition: background 0.2s, color 0.2s;
+          }
+          .calendar-table th {
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 15px;
+            background: none;
+            border: none;
+            padding: 10px 0;
+          }
+          .calendar-table td {
+            cursor: pointer;
+            background: none;
+            border: none;
+          }
+          .calendar-table td.today {
+            background: #4f46e5;
+            color: #fff;
+            font-weight: 700;
+          }
+          .calendar-table td.selected {
+            background: #e0e7ff;
+            color: #4f46e5;
+            font-weight: 700;
+          }
+          .calendar-table td:hover:not(.today):not(.selected) {
+            background: #f3f4f6;
+          }
+          @media (max-width: 700px) {
+            .calendar-container {
+              max-width: 100%;
+              padding: 12px 2px 8px 2px;
+            }
+            .calendar-title {
+              font-size: 17px;
+            }
+            .calendar-table th, .calendar-table td {
+              font-size: 13px;
+              padding: 7px 0;
+            }
+          }
+        </style>
+        <script>
+          function renderCalendar(containerId) {
+            const container = document.getElementById(containerId);
+            const today = new Date();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
+            let selectedDay = null;
+
+            function getMonthName(month, year) {
+              const date = new Date(year, month, 1);
+              return date.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+            }
+
+            function daysInMonth(month, year) {
+              return new Date(year, month + 1, 0).getDate();
+            }
+
+            function render() {
+              container.innerHTML = '';
+              // Header
+              const header = document.createElement('div');
+              header.className = 'calendar-header';
+              const prevBtn = document.createElement('button');
+              prevBtn.className = 'calendar-nav-btn';
+              prevBtn.innerHTML = '‹';
+              prevBtn.onclick = () => {
+                if (currentMonth === 0) {
+                  currentMonth = 11;
+                  currentYear--;
+                } else {
+                  currentMonth--;
+                }
+                render();
+              };
+              const nextBtn = document.createElement('button');
+              nextBtn.className = 'calendar-nav-btn';
+              nextBtn.innerHTML = '›';
+              nextBtn.onclick = () => {
+                if (currentMonth === 11) {
+                  currentMonth = 0;
+                  currentYear++;
+                } else {
+                  currentMonth++;
+                }
+                render();
+              };
+              const title = document.createElement('div');
+              title.className = 'calendar-title';
+              title.textContent = getMonthName(currentMonth, currentYear);
+              header.appendChild(prevBtn);
+              header.appendChild(title);
+              header.appendChild(nextBtn);
+              container.appendChild(header);
+              // Table
+              const table = document.createElement('table');
+              table.className = 'calendar-table';
+              const thead = document.createElement('thead');
+              const tr = document.createElement('tr');
+              const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+              days.forEach(day => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                tr.appendChild(th);
+              });
+              thead.appendChild(tr);
+              table.appendChild(thead);
+              const tbody = document.createElement('tbody');
+              const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+              const totalDays = daysInMonth(currentMonth, currentYear);
+              let date = 1;
+              for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+                for (let j = 0; j < 7; j++) {
+                  const cell = document.createElement('td');
+                  if (i === 0 && j < firstDay) {
+                    cell.textContent = '';
+                  } else if (date > totalDays) {
+                    cell.textContent = '';
+                  } else {
+                    cell.textContent = date;
+                    const isToday =
+                      date === today.getDate() &&
+                      currentMonth === today.getMonth() &&
+                      currentYear === today.getFullYear();
+                    if (isToday) cell.classList.add('today');
+                    if (
+                      selectedDay &&
+                      date === selectedDay.getDate() &&
+                      currentMonth === selectedDay.getMonth() &&
+                      currentYear === selectedDay.getFullYear()
+                    ) {
+                      cell.classList.add('selected');
+                    }
+                    cell.onclick = function () {
+                      selectedDay = new Date(currentYear, currentMonth, date);
+                      render();
+                    };
+                    date++;
+                  }
+                  row.appendChild(cell);
+                }
+                tbody.appendChild(row);
+              }
+              table.appendChild(tbody);
+              container.appendChild(table);
+            }
+            render();
+          }
+          document.addEventListener('DOMContentLoaded', function () {
+            renderCalendar('calendarContainer');
+          });
+        </script>
+
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const sidebar = document.getElementById("sidebar");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+          mobileMenuToggle.classList.toggle("active");
+          sidebar.classList.toggle("mobile-open");
+          mobileOverlay.classList.toggle("active");
+        }
+
+        function closeMobileMenu() {
+          mobileMenuToggle.classList.remove("active");
+          sidebar.classList.remove("mobile-open");
+          mobileOverlay.classList.remove("active");
+        }
+
+        mobileMenuToggle.addEventListener("click", toggleMobileMenu);
+        mobileOverlay.addEventListener("click", closeMobileMenu);
+
+        const sidebarLinks = sidebar.querySelectorAll(".menu-item");
+        sidebarLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+              closeMobileMenu();
+            }
+          });
+        });
+
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+            closeMobileMenu();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

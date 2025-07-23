@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrasi Berhasil! - EnglishKids LMS</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico" />
+    <style>
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: white;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .container {
+        background: #fff7ed;
+        border: 1.5px solid #fdba74;
+        border-radius: 8px;
+        padding: 48px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 2px 8px 0 #fdba7433;
+      }
+      h2 { margin-bottom: 16px; color: #ea580c; }
+      p { color: #b45309; font-size: 16px; margin-bottom: 24px; }
+      a { color: #2563eb; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Akun Belum Di-ACC</h2>
+      <p>Akun kamu udah ada, tapi belum di acc oleh admin.<br>Hubungi adminmu.</p>
+      <a href="{% url 'login' %}">Kembali ke Login</a>
+    </div>
+  </body>
+</html> 

@@ -1,0 +1,157 @@
+{% load static %}
+{% load extras %}
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Kuis - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb;
+        color: #1f2937;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        line-height: 1.6;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .question-container {
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+      }
+
+      p {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      hr {
+        border: 0;
+        border-top: 1px solid #e5e7eb;
+        margin: 1.5rem 0;
+      }
+
+      /* Back Button Styling */
+      .back-button {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        padding: 0.75rem 1.5rem;
+        background-color: #3b82f6;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
+
+      .back-button:hover {
+        background-color: #2563eb;
+        transform: scale(1.05);
+      }
+
+      /* Subtle bounce animation */
+      .back-button {
+        animation: float 2s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 480px) {
+        body {
+          padding: 1rem;
+        }
+        h2 {
+          font-size: 1.25rem;
+        }
+        .question-container {
+          padding: 1rem;
+        }
+        .back-button {
+          padding: 0.5rem 1rem;
+          font-size: 0.85rem;
+          bottom: 15px;
+          left: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🔍 Review Kuis: {{ course.name }}</h2>
+
+    {% for q in questions %}
+      {% with user_answer=user_answers|index:forloop.counter0 %}
+        <div class="question-container">
+          <p><strong>{{ forloop.counter }}. {{ q.question }}</strong></p>
+          <ul>
+            {% for key, option in q.options.items %}
+              <li
+                {% if key == q.answer %}
+                  style="color: #15803d; font-weight: 500;"
+                {% elif key == user_answer %}
+                  style="color: #b91c1c;"
+                {% endif %}
+              >
+                {{ key }}. {{ option }}
+                {% if key == q.answer %} ✅{% endif %}
+                {% if key == user_answer and key != q.answer %} ❌{% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <hr />
+      {% endwith %}
+    {% endfor %}
+
+    <a href="{% url 'quiz_generate' course.id %}?show_results=true" class="back-button">⬅️ Kembali ke Hasil Kuis</a>
+  </body>
+</html>

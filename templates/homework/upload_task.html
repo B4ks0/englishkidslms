@@ -1,0 +1,844 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Tugas - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --secondary-color: #10b981;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --bg-light: #f9fafb;
+        --bg-white: #ffffff;
+        --border-color: #e5e7eb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--bg-light);
+        color: var(--text-dark);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid #e8e8e8;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.mobile-hidden {
+        transform: translateX(-100%);
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 101;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .mobile-menu-toggle:hover {
+        background: #f8f8f8;
+      }
+
+      .mobile-menu-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #1a1a1a;
+        margin: 4px 0;
+        transition: 0.3s;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(-45deg) translate(-4px, 4px);
+      }
+
+      .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(45deg) translate(-4px, -4px);
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-overlay.active {
+        opacity: 1;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "📚";
+        font-size: 20px;
+      }
+
+      .auth-section {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 24px;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: #666;
+        font-weight: 400;
+      }
+
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .menu-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        color: #666;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        position: relative;
+      }
+
+      .menu-item:hover {
+        background: #f8f8f8;
+        color: #1a1a1a;
+      }
+
+      .menu-item-primary {
+        color: #1a1a1a;
+        font-weight: 600;
+        background: #f8f8f8;
+      }
+
+      .menu-item-primary:hover {
+        background: #f0f0f0;
+      }
+
+      .menu-item-ghost {
+        color: #666;
+        font-weight: 500;
+        margin-top: auto;
+      }
+
+      .menu-item-ghost:hover {
+        color: #dc2626;
+        background: #fef2f2;
+      }
+
+      .menu-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .menu-text {
+        flex: 1;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 40px;
+        margin-left: 240px;
+        background: var(--bg-light);
+      }
+
+      .header {
+        text-align: left;
+        margin-bottom: 32px;
+      }
+
+      .header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .header p {
+        font-size: 16px;
+        color: var(--text-light);
+        margin-top: 4px;
+      }
+
+      .upload-container {
+        background: var(--bg-white);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 32px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: #f8f9fa;
+        color: var(--text-dark);
+        transition: border-color 0.2s ease;
+      }
+
+      .form-group input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+      }
+
+      .form-error {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .uploaded-image {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 8px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #4338ca;
+      }
+
+      .btn-secondary {
+        background: var(--secondary-color);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #059669;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .mobile-menu-toggle {
+          display: block;
+        }
+
+        .mobile-overlay.active {
+          display: block;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 20px;
+          padding-top: 80px;
+        }
+
+        .header h2 {
+          font-size: 24px;
+        }
+
+        .upload-container {
+          margin: 0 10px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h2 {
+          font-size: 20px;
+        }
+
+        .upload-container {
+          padding: 16px;
+        }
+
+        .sidebar {
+          width: 280px;
+        }
+
+        .btn {
+          font-size: 13px;
+          padding: 6px 12px;
+        }
+      }
+
+      .modal-confirm-overlay {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-confirm-overlay.active {
+        display: flex;
+      }
+      .modal-confirm {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+        padding: 32px 24px 24px 24px;
+        max-width: 350px;
+        text-align: center;
+        animation: popin 0.2s cubic-bezier(0.4, 2, 0.6, 1) both;
+      }
+      .modal-confirm h3 {
+        font-size: 20px;
+        margin-bottom: 12px;
+        color: #4f46e5;
+      }
+      .modal-confirm p {
+        color: #444;
+        margin-bottom: 24px;
+      }
+      .modal-confirm .btn {
+        min-width: 100px;
+        margin: 0 8px;
+      }
+      @keyframes popin {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255,255,255,0.97);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 3000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+      }
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        display: flex;
+      }
+      .loading-container {
+        text-align: center;
+        padding: 40px;
+      }
+      .loading-animation {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+      }
+      .book-loader {
+        position: absolute;
+        width: 60px;
+        height: 45px;
+        border: 3px solid #333;
+        border-radius: 3px;
+        background: white;
+        animation: bookFlip 1.5s infinite ease-in-out;
+      }
+      .book-loader::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: #333;
+        border-radius: 2px;
+        animation: lineGrow 1.5s infinite ease-in-out;
+      }
+      .book-loader::after {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 8px;
+        right: 20px;
+        height: 2px;
+        background: #666;
+        border-radius: 1px;
+        animation: lineGrow 1.5s infinite ease-in-out 0.2s;
+      }
+      .page-flip {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        width: 30px;
+        height: 45px;
+        background: #f8f8f8;
+        border: 3px solid #333;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+        transform-origin: left center;
+        animation: pageFlip 1.5s infinite ease-in-out;
+      }
+      .floating-letters {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        opacity: 0;
+        animation: floatLetters 2s infinite ease-in-out;
+      }
+      .floating-letters span {
+        display: inline-block;
+        margin: 0 2px;
+        animation: bounceLetters 1.5s infinite ease-in-out;
+      }
+      .floating-letters span:nth-child(1) { animation-delay: 0s; }
+      .floating-letters span:nth-child(2) { animation-delay: 0.1s; }
+      .floating-letters span:nth-child(3) { animation-delay: 0.2s; }
+      .floating-letters span:nth-child(4) { animation-delay: 0.3s; }
+      .floating-letters span:nth-child(5) { animation-delay: 0.4s; }
+      .floating-letters span:nth-child(6) { animation-delay: 0.5s; }
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+      .loading-subtext {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+      .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+      }
+      .loading-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #333;
+        animation: dotPulse 1.5s infinite ease-in-out;
+      }
+      .loading-dot:nth-child(1) { animation-delay: 0s; }
+      .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+      .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes bookFlip {
+        0%,100% { transform: rotateY(0deg); }
+        50% { transform: rotateY(-25deg); }
+      }
+      @keyframes pageFlip {
+        0%,100% { transform: rotateY(0deg); }
+        50% { transform: rotateY(-120deg); }
+      }
+      @keyframes lineGrow {
+        0%,100% { width: 0; }
+        50% { width: 44px; }
+      }
+      @keyframes floatLetters {
+        0%,100% { opacity: 0; }
+        10%,90% { opacity: 1; }
+      }
+      @keyframes bounceLetters {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+      @keyframes dotPulse {
+        0%,100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="logo">EnglishKids</a>
+      </div>
+      <div class="auth-section">
+        {% if user.is_authenticated %}
+        <div class="user-info">
+          <span class="user-greeting">Hello,</span>
+          <span class="user-name">{{ user.username }}</span>
+        </div>
+        <a href="{% url 'dashboard_redirect' %}" class="menu-item">
+          <span class="menu-icon">🏠</span>
+          <span class="menu-text">Dashboard</span>
+        </a>
+        <a href="{% url 'course_redirect' %}" class="menu-item">
+          <span class="menu-icon">📖</span>
+          <span class="menu-text">Courses</span>
+        </a>
+        <a href="{% url 'homework_list' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">📝</span>
+          <span class="menu-text">Homework</span>
+        </a>
+        <a href="{% url 'profile' %}" class="menu-item">
+          <span class="menu-icon">🙂</span>
+          <span class="menu-text">Profile</span>
+        </a>
+        {% if user.is_superuser %}
+        <a href="/admin/" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-text">Admin</span>
+        </a>
+        {% endif %}
+        <form
+          action="{% url 'logout' %}"
+          method="post"
+          style="display: contents"
+        >
+          {% csrf_token %}
+          <button type="submit" class="menu-item menu-item-ghost">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">Logout</span>
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Login</span>
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+        <div class="header">
+          <h2>Upload Tugas</h2>
+          <p>Unggah hasil tugasmu sesuai instruksi di bawah ini.</p>
+        </div>
+        <div class="upload-container">
+          <p><strong>Instruksi:</strong> {{ task.instruction }}</p>
+          <div class="upload-info-box" style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:16px;">
+            <span style="font-size:32px;">📸</span>
+            <div>
+              <strong>Syarat Upload:</strong><br>
+              Hanya <b>foto dari HP</b> (jpg, jpeg, png, heic, webp), max 5MB.<br>
+              Contoh: foto tugas catatan di kertas, hasil tulisan tangan, dsb.<br>
+              Pastikan gambar jelas dan tidak blur.
+            </div>
+          </div>
+          <form
+            id="uploadTaskForm"
+            method="post"
+            enctype="multipart/form-data"
+            style="margin-top: 24px"
+          >
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 24px;">
+              <label for="id_image" style="font-weight:600;font-size:15px;">Upload Foto Tugas</label>
+              <div id="customFileDrop" class="custom-file-drop" style="border:2px dashed #a5b4fc;background:#f1f5f9;border-radius:12px;padding:32px 0;text-align:center;cursor:pointer;position:relative;transition: border-color 0.2s;">
+                <input type="file" name="image" id="id_image" accept="image/*" style="opacity:0;position:absolute;left:0;top:0;width:100%;height:100%;cursor:pointer;z-index:2;" />
+                <div id="fileDropContent" style="z-index:1;position:relative;">
+                  <span style="font-size:40px;display:block;">🖼️</span>
+                  <span id="fileDropText" style="color:#6366f1;font-weight:500;">Klik di sini atau drag & drop foto tugas kamu</span>
+                  <div id="fileNamePreview" style="margin-top:8px;color:#6b7280;font-size:13px;"></div>
+                </div>
+                <img id="imgPreview" src="" alt="Preview" style="display:none;max-width:180px;margin:16px auto 0 auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.07);" />
+              </div>
+              {% if form.image.errors %}
+                <div style="color: #dc2626; font-size: 13px; margin-top: 8px;">{{ form.image.errors }}</div>
+              {% endif %}
+            </div>
+            {% if form.instance.image %}
+            <div style="margin-bottom: 16px">
+              <strong>Gambar yang sudah diupload:</strong><br />
+              <img
+                src="{{ form.instance.image.url }}"
+                alt="Tugas Upload"
+                style="max-width: 100%; border-radius: 8px; margin-top: 8px"
+              />
+            </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary" id="uploadBtn" style="font-size:17px;padding:14px 32px;margin-top:12px;display:inline-flex;align-items:center;gap:8px;">
+              <span style="font-size:20px;">⬆️</span> Upload Tugas
+            </button>
+            <a
+              href="{% url 'homework_list' %}"
+              class="btn btn-secondary"
+              style="margin-left: 8px"
+              >Kembali</a
+            >
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal Konfirmasi Upload -->
+    <div class="modal-confirm-overlay" id="modalConfirmUpload">
+      <div class="modal-confirm">
+        <h3>Konfirmasi Upload</h3>
+        <p>Apakah kamu yakin mau upload ini ke guru?</p>
+        <button class="btn btn-primary" id="confirmUploadBtn">
+          Ya, Upload
+        </button>
+        <button class="btn btn-secondary" id="cancelUploadBtn">Batal</button>
+      </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+      <div class="loading-container">
+        <div class="loading-animation">
+          <div class="book-loader">
+            <div class="page-flip"></div>
+          </div>
+          <div class="floating-letters">
+            <span>U</span><span>P</span><span>L</span><span>O</span><span>A</span><span>D</span>
+          </div>
+        </div>
+        <div class="loading-text">Mengupload Tugas...</div>
+        <div class="loading-subtext" id="loadingSubtext">
+          Sedang mengirim file ke guru...
+        </div>
+        <div class="loading-dots">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("uploadTaskForm");
+        const modal = document.getElementById("modalConfirmUpload");
+        const confirmBtn = document.getElementById("confirmUploadBtn");
+        const cancelBtn = document.getElementById("cancelUploadBtn");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingSubtext = document.getElementById("loadingSubtext");
+        let submitReady = false;
+        const loadingMessages = [
+          "Sedang mengupload tugas kamu...",
+          "Mengirim file ke guru...",
+          "Memastikan file tidak corrupt...",
+          "Hampir selesai, mohon tunggu...",
+          "Tugas kamu sedang diproses..."
+        ];
+        let messageIndex = 0;
+        let messageInterval = null;
+        if (form) {
+          form.addEventListener("submit", function (e) {
+            if (!submitReady) {
+              e.preventDefault();
+              modal.classList.add("active");
+            } else {
+              // Tampilkan loading overlay
+              loadingOverlay.classList.add("active");
+              loadingOverlay.style.display = "flex";
+              loadingSubtext.textContent = loadingMessages[0];
+              messageIndex = 0;
+              messageInterval = setInterval(() => {
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+                loadingSubtext.textContent = loadingMessages[messageIndex];
+              }, 1200);
+              // Setelah submit, biarkan overlay tetap tampil sampai reload/redirect
+              submitReady = false; // reset untuk submit berikutnya
+            }
+          });
+        }
+        if (confirmBtn) {
+          confirmBtn.addEventListener("click", function () {
+            submitReady = true;
+            modal.classList.remove("active");
+            form.requestSubmit();
+          });
+        }
+        if (cancelBtn) {
+          cancelBtn.addEventListener("click", function () {
+            modal.classList.remove("active");
+          });
+        }
+      });
+
+      // Custom file input & preview
+      const fileInput = document.getElementById('id_image');
+      const fileDrop = document.getElementById('customFileDrop');
+      const fileDropText = document.getElementById('fileDropText');
+      const fileNamePreview = document.getElementById('fileNamePreview');
+      const imgPreview = document.getElementById('imgPreview');
+      if (fileInput && fileDrop) {
+        fileDrop.addEventListener('click', function(e) {
+          fileInput.click();
+        });
+        fileInput.addEventListener('change', function(e) {
+          if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            fileNamePreview.textContent = file.name;
+            if (file.type.startsWith('image/')) {
+              const reader = new FileReader();
+              reader.onload = function(ev) {
+                imgPreview.src = ev.target.result;
+                imgPreview.style.display = 'block';
+              };
+              reader.readAsDataURL(file);
+            } else {
+              imgPreview.style.display = 'none';
+            }
+          } else {
+            fileNamePreview.textContent = '';
+            imgPreview.style.display = 'none';
+          }
+        });
+        // Drag & drop
+        fileDrop.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          fileDrop.style.borderColor = '#6366f1';
+        });
+        fileDrop.addEventListener('dragleave', function(e) {
+          fileDrop.style.borderColor = '#a5b4fc';
+        });
+        fileDrop.addEventListener('drop', function(e) {
+          e.preventDefault();
+          fileDrop.style.borderColor = '#a5b4fc';
+          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            fileInput.files = e.dataTransfer.files;
+            fileInput.dispatchEvent(new Event('change'));
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

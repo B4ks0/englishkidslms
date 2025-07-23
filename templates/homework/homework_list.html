@@ -1,0 +1,1167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Homework - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --secondary-color: #10b981;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --bg-light: #f9fafb;
+        --bg-white: #ffffff;
+        --border-color: #e5e7eb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--bg-light);
+        color: var(--text-dark);
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid #e8e8e8;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.mobile-hidden {
+        transform: translateX(-100%);
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 101;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .mobile-menu-toggle:hover {
+        background: #f8f8f8;
+      }
+
+      .mobile-menu-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #1a1a1a;
+        margin: 4px 0;
+        transition: 0.3s;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(-45deg) translate(-4px, 4px);
+      }
+
+      .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(45deg) translate(-4px, -4px);
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-overlay.active {
+        opacity: 1;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "📚";
+        font-size: 20px;
+      }
+
+      .auth-section {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 24px;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: #666;
+        font-weight: 400;
+      }
+
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .menu-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        color: #666;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        position: relative;
+      }
+
+      .menu-item:hover {
+        background: #f8f8f8;
+        color: #1a1a1a;
+      }
+
+      .menu-item-primary {
+        color: #1a1a1a;
+        font-weight: 600;
+        background: #f8f8f8;
+      }
+
+      .menu-item-primary:hover {
+        background: #f0f0f0;
+      }
+
+      .menu-item-ghost {
+        color: #666;
+        font-weight: 500;
+        margin-top: auto;
+      }
+
+      .menu-item-ghost:hover {
+        color: #dc2626;
+        background: #fef2f2;
+      }
+
+      .menu-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .menu-text {
+        flex: 1;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 40px;
+        margin-left: 240px;
+        background: var(--bg-light);
+      }
+
+      .header {
+        text-align: left;
+        margin-bottom: 32px;
+      }
+
+      .header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+
+      .header p {
+        font-size: 16px;
+        color: var(--text-light);
+        margin-top: 4px;
+      }
+
+      .homework-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .homework-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+      }
+
+      .homework-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .homework-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+
+      .homework-posted-date {
+        font-size: 12px;
+        color: var(--text-light);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .homework-posted-date::before {
+        content: "📅";
+        font-size: 10px;
+      }
+
+      .homework-description {
+        font-size: 14px;
+        color: var(--text-light);
+        margin-top: 12px;
+        line-height: 1.6;
+      }
+
+      /* Accordion native style, tanpa animasi custom */
+      .task-accordion {
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 8px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        transition: box-shadow 0.2s;
+      }
+      .task-accordion[open] {
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.08);
+      }
+      .task-accordion summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 15px;
+        color: var(--text-dark);
+        background: #f8fafc;
+        transition: background 0.2s;
+        outline: none;
+        border: none;
+        user-select: none;
+      }
+      .task-accordion summary:hover {
+        background: #eef2ff;
+      }
+      .task-details {
+        padding: 20px 24px;
+        background-color: #f8fafc;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 24px;
+      }
+
+      .task-accordion[open] .summary-arrow {
+        transform: rotate(180deg);
+      }
+
+      .task-accordion summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .summary-title {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .summary-title .icon {
+        font-size: 18px;
+      }
+
+      .task-title {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-dark);
+      }
+
+      .task-posted-date {
+        font-size: 13px;
+        color: var(--text-light);
+      }
+
+      .summary-deadline {
+        font-size: 13px;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .summary-deadline::before {
+        content: "⏰";
+        font-size: 10px;
+      }
+
+      .task-content {
+        flex: 1;
+      }
+
+      .task-instruction {
+        font-size: 14px;
+        color: var(--text-dark);
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      .task-instruction strong {
+        font-weight: 600;
+      }
+
+      .task-deadline {
+        font-size: 13px;
+        color: var(--text-light);
+        margin-bottom: 12px;
+      }
+
+      .task-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .task-status {
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .task-status.completed {
+        color: var(--secondary-color);
+      }
+
+      .task-status.pending {
+        color: var(--text-light);
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #4338ca;
+      }
+
+      .btn-secondary {
+        background: var(--secondary-color);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #059669;
+      }
+
+      .btn.loading {
+        pointer-events: none;
+        color: transparent;
+      }
+
+      .btn.loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 16px;
+        height: 16px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background-color: var(--bg-white);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+      }
+
+      .empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-dark);
+      }
+
+      .empty-description {
+        font-size: 14px;
+        color: var(--text-light);
+      }
+
+      /* Loading Animation */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .loading-container {
+        text-align: center;
+        padding: 40px;
+      }
+
+      .loading-animation {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+      }
+
+      .book-loader {
+        position: absolute;
+        width: 60px;
+        height: 45px;
+        border: 3px solid var(--text-dark);
+        border-radius: 3px;
+        background: var(--bg-white);
+        animation: bookFlip 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: var(--text-dark);
+        border-radius: 2px;
+        animation: lineGrow 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::after {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 8px;
+        right: 20px;
+        height: 2px;
+        background: var(--text-light);
+        border-radius: 1px;
+        animation: lineGrow 1.5s infinite ease-in-out 0.2s;
+      }
+
+      .page-flip {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        width: 30px;
+        height: 45px;
+        background: var(--bg-light);
+        border: 3px solid var(--text-dark);
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+        transform-origin: left center;
+        animation: pageFlip 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        opacity: 0;
+        animation: floatLetters 2s infinite ease-in-out;
+      }
+
+      .floating-letters span {
+        display: inline-block;
+        margin: 0 2px;
+        animation: bounceLetters 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .floating-letters span:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .floating-letters span:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .floating-letters span:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+
+      @keyframes bookFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-25deg);
+        }
+      }
+
+      @keyframes pageFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-180deg);
+        }
+      }
+
+      @keyframes lineGrow {
+        0%,
+        100% {
+          width: 20px;
+          opacity: 0.3;
+        }
+        50% {
+          width: 35px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes floatLetters {
+        0%,
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-10px);
+        }
+      }
+
+      @keyframes bounceLetters {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes spin {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+      }
+
+      .loading-subtext {
+        font-size: 14px;
+        color: var(--text-light);
+        margin-bottom: 16px;
+      }
+
+      .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-dark);
+        animation: dotPulse 1.5s infinite ease-in-out;
+      }
+
+      .dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes dotPulse {
+        0%,
+        100% {
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .mobile-menu-toggle {
+          display: block;
+        }
+
+        .mobile-overlay.active {
+          display: block;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 20px;
+          padding-top: 80px;
+        }
+
+        .header h2 {
+          font-size: 24px;
+        }
+
+        .homework-container {
+          margin: 0 10px;
+        }
+
+        .homework-title {
+          font-size: 18px;
+        }
+
+        .homework-posted-date {
+          font-size: 11px;
+        }
+
+        .task-accordion summary {
+          padding: 12px 16px;
+        }
+
+        .task-details {
+          padding: 0 16px;
+          flex-direction: column;
+        }
+
+        .task-actions {
+          align-items: stretch;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h2 {
+          font-size: 20px;
+        }
+        .container {
+          padding: 4px;
+        }
+        .homework-container {
+          padding: 4px;
+          gap: 12px;
+        }
+        .homework-card {
+          border-radius: 8px;
+        }
+        .homework-header {
+          padding: 12px 10px;
+        }
+        .homework-title {
+          font-size: 15px;
+        }
+        .homework-description {
+          font-size: 12px;
+        }
+        .task-accordion summary {
+          padding: 8px 10px;
+          font-size: 13px;
+        }
+        .task-details {
+          padding: 10px 8px;
+          gap: 10px;
+        }
+        .task-title {
+          font-size: 12px;
+        }
+        .summary-deadline {
+          font-size: 11px;
+        }
+        .task-posted-date {
+          font-size: 11px;
+        }
+        .task-instruction {
+          font-size: 12px;
+        }
+        .task-deadline {
+          font-size: 11px;
+        }
+        .btn {
+          font-size: 13px;
+          padding: 8px 0;
+          width: 100%;
+          min-width: unset;
+        }
+        .task-actions {
+          gap: 6px;
+        }
+      }
+      @media (max-width: 360px) {
+        .container, .homework-container {
+          padding: 0;
+        }
+        .homework-header, .task-accordion summary, .task-details {
+          padding-left: 4px;
+          padding-right: 4px;
+        }
+      }
+
+      .toast-progress {
+        position: absolute;
+        left: 0; bottom: 0; right: 0;
+        height: 4px;
+        background: rgba(255,255,255,0.85);
+        border-radius: 0 0 12px 12px;
+        width: 100%;
+        animation: toastProgressBar 4s linear forwards;
+      }
+      #toast-upload-success { position:fixed; overflow:hidden; }
+      @keyframes toastProgressBar {
+        from { width: 100%; }
+        to { width: 0%; }
+      }
+    </style>
+  </head>
+  <body>
+    {% if toast %}
+    <style>
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-40px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeOutUp {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-40px); }
+      }
+    </style>
+    <div id="toast-upload-success" style="position:fixed;top:32px;right:32px;z-index:9999;min-width:280px;max-width:90vw;background:{{ toast.color|default:'#2563eb' }};color:white;padding:18px 32px 28px 32px;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);font-size:16px;display:flex;align-items:center;gap:12px;animation:fadeInDown 0.6s;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;width:100%;">
+        <span style="font-size:22px;">{{ toast.icon|default:'📤' }}</span>
+        <span><strong>{{ toast.message }}</strong></span>
+      </div>
+      <div class="toast-progress"></div>
+    </div>
+    <script>
+      setTimeout(function() {
+        var toast = document.getElementById('toast-upload-success');
+        if (toast) {
+          toast.style.animation = 'fadeOutUp 0.6s';
+          setTimeout(function() { toast.remove(); }, 600);
+        }
+      }, 4000);
+    </script>
+    {% endif %}
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-container">
+        <div class="loading-animation">
+          <div class="book-loader">
+            <div class="page-flip"></div>
+          </div>
+          <div class="floating-letters">
+            <span>Q</span>
+            <span>U</span>
+            <span>I</span>
+            <span>Z</span>
+          </div>
+        </div>
+        <div class="loading-text">Preparing Quiz...</div>
+        <div class="loading-subtext" id="loadingSubtext">
+          Getting ready for your learning adventure!
+        </div>
+        <div class="loading-dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="logo">EnglishKids</a>
+      </div>
+      <div class="auth-section">
+        {% if user.is_authenticated %}
+        <div class="user-info">
+          <span class="user-greeting">Hello,</span>
+          <span class="user-name">{{ user.username }}</span>
+        </div>
+        <a href="{% url 'dashboard_redirect' %}" class="menu-item">
+          <span class="menu-icon">🏠</span>
+          <span class="menu-text">Dashboard</span>
+        </a>
+        <a href="{% url 'course_redirect' %}" class="menu-item">
+          <span class="menu-icon">📖</span>
+          <span class="menu-text">Courses</span>
+        </a>
+        <a href="{% url 'homework_list' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">📝</span>
+          <span class="menu-text">Homework</span>
+        </a>
+        <a href="{% url 'profile' %}" class="menu-item">
+          <span class="menu-icon">🙂</span>
+          <span class="menu-text">Profile</span>
+        </a>
+        {% if user.is_superuser %}
+        <a href="/admin/" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-text">Admin</span>
+        </a>
+        {% endif %}
+        <form
+          action="{% url 'logout' %}"
+          method="post"
+          style="display: contents"
+        >
+          {% csrf_token %}
+          <button type="submit" class="menu-item menu-item-ghost">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">Logout</span>
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Login</span>
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+        <div class="header">
+          <h2>Tugas Homework Kamu</h2>
+          <p>
+            Lihat dan selesaikan tugas-tugas yang diberikan untuk meningkatkan
+            kemampuan bahasa Inggrismu!
+          </p>
+        </div>
+
+        <div class="homework-container">
+          {% for hw in homeworks %}
+          <div class="homework-card">
+            <div class="homework-header">
+              <h3 class="homework-title">{{ hw.title }}</h3>
+              <div class="homework-description">
+                <strong>Deskripsi:</strong> {{ hw.description }}
+              </div>
+            </div>
+            {% for task in hw.enriched_tasks %}
+            <details class="task-accordion">
+              <summary>
+                <div class="summary-title">
+                  <div class="task-title {{ task.task_type|lower }}">
+                    {% if task.task_type == "quiz" %}
+                    <span class="icon">❓</span>
+                    {% elif task.task_type == "catatan" %}
+                    <span class="icon">📝</span>
+                    {% endif %} {% if task.completed %} Tugas
+                    {{task.get_task_type_display }} ✅ {% else %} Tugas
+                    {{task.get_task_type_display }} 🔔 {% endif %}
+                  </div>
+                  <div class="task-posted-date">
+                    Posted at: {{ task.posted_at|date:"d F Y" }}
+                  </div>
+                </div>
+                <div class="summary-deadline">
+                  Deadline: {{ task.deadline|date:"d F Y" }}
+                  <span class="summary-arrow">▼</span>
+                </div>
+              </summary>
+              <div class="task-details">
+                <div class="task-content">
+                  <p class="task-instruction">{{ task.instruction }}</p>
+                  <p class="task-deadline">
+                    Batas waktu: {{ task.deadline|date:"l, d F Y" }}
+                  </p>
+                </div>
+                <div class="task-actions">
+                  <div
+                    class="task-status {% if task.completed %}completed{% else %}pending{% endif %}"
+                  >
+                    {% if task.task_type == "quiz" %} {% if task.completed %}
+                    <span>✅ Sudah dikerjakan</span>
+                    {% else %} {% if hw.id %}
+                    <a
+                      class="btn btn-primary quiz-btn"
+                      href="{% url 'quiz_generate' hw.id %}"
+                      data-homework-title="{{ hw.title }}"
+                    >
+                      Mulai Kuis
+                    </a>
+                    {% else %}
+                    <span>Course tidak ditemukan.</span>
+                    {% endif %} {% endif %} {%elif task.task_type == "catatan"%}
+                    {% if task.completed %}
+                    <span>✅ Sudah dikerjakan</span>
+                    {% elif task.waiting_approval %}
+                    <span>⏳ Sementara dicek </span>
+                    {% else %}
+                    <a
+                      class="btn btn-secondary"
+                      href="{% url 'homework_upload' task.id %}"
+                      >Submit Tugas</a
+                    >
+                    {% endif %} {% endif %}
+                  </div>
+                </div>
+              </div>
+            </details>
+            {% empty %}
+            <p style="padding: 24px">Belum ada tugas untuk homework ini.</p>
+            {% endfor %}
+          </div>
+          {% empty %}
+          <div class="empty-state">
+            <div class="empty-icon">🎉</div>
+            <div class="empty-title">Tidak Ada Tugas</div>
+            <div class="empty-description">
+              Tidak ada tugas untukmu saat ini. Kamu hebat!
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const sidebar = document.getElementById("sidebar");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+        const quizButtons = document.querySelectorAll(".quiz-btn");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingSubtext = document.getElementById("loadingSubtext");
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+          mobileMenuToggle.classList.toggle("active");
+          sidebar.classList.toggle("mobile-open");
+          mobileOverlay.classList.toggle("active");
+        }
+
+        function closeMobileMenu() {
+          mobileMenuToggle.classList.remove("active");
+          sidebar.classList.remove("mobile-open");
+          mobileOverlay.classList.remove("active");
+        }
+
+        mobileMenuToggle.addEventListener("click", toggleMobileMenu);
+        mobileOverlay.addEventListener("click", closeMobileMenu);
+
+        const sidebarLinks = sidebar.querySelectorAll(".menu-item");
+        sidebarLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+              closeMobileMenu();
+            }
+          });
+        });
+
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+            closeMobileMenu();
+          }
+        });
+
+        // Quiz button loading animation
+        const loadingMessages = [
+          "Getting ready for your learning adventure!",
+          "Preparing your personalized quiz...",
+          "Loading fun questions just for you!",
+          "Almost ready to test your knowledge!",
+          "Setting up your English challenge!",
+        ];
+
+        quizButtons.forEach((button) => {
+          button.addEventListener("click", function (e) {
+            e.preventDefault();
+            loadingOverlay.classList.add("active");
+            this.classList.add("loading");
+            const homeworkTitle = this.getAttribute("data-homework-title");
+            loadingSubtext.textContent = `Preparing ${homeworkTitle} quiz...`;
+            let messageIndex = 0;
+            const messageInterval = setInterval(() => {
+              messageIndex = (messageIndex + 1) % loadingMessages.length;
+              loadingSubtext.textContent = loadingMessages[messageIndex];
+            }, 1000);
+            setTimeout(() => {
+              clearInterval(messageInterval);
+              window.location.href = this.getAttribute("href");
+            }, 2000);
+          });
+        });
+
+        // Accordion: hanya satu task-accordion yang boleh terbuka
+        document
+          .querySelectorAll(".homework-container")
+          .forEach((container) => {
+            const accordions = container.querySelectorAll(".task-accordion");
+            accordions.forEach((accordion) => {
+              accordion.addEventListener("toggle", function () {
+                if (accordion.open) {
+                  accordions.forEach((other) => {
+                    if (other !== accordion && other.open) {
+                      other.open = false;
+                    }
+                  });
+                }
+              });
+            });
+          });
+      });
+    </script>
+  </body>
+</html>

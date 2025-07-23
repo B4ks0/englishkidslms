@@ -1,0 +1,1129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #333;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header */
+      .header-nav {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 20px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+      }
+
+      .auth-section {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .btn-nav {
+        padding: 8px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: 1px solid #e0e0e0;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        color: #333;
+      }
+
+      .btn-nav:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-nav-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .btn-nav-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      .btn-nav-ghost {
+        background: none;
+        color: #666;
+        border: none;
+        padding: 5px 10px;
+        font-size: 13px;
+      }
+
+      .btn-nav-ghost:hover {
+        color: #333;
+        background: #f8f8f8;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 40px 0;
+      }
+
+      .quiz-header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: #333;
+      }
+
+      .quiz-title {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .quiz-subtitle {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .progress-container {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 32px;
+        border: 1px solid #f0f0f0;
+      }
+
+      .progress-bar {
+        height: 4px;
+        background: #f0f0f0;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #333;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .question-indicator {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 32px;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        transition: none;
+      }
+
+      .dot.active {
+        background: #333;
+      }
+
+      .dot.completed {
+        background: #4caf50;
+      }
+
+      .quiz-card {
+        background: white;
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 32px;
+        transition: all 0.2s ease;
+      }
+
+      .quiz-card:hover {
+        border-color: #e0e0e0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .question-header {
+        background: #f8f9fa;
+        padding: 24px;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: center;
+      }
+
+      .question-number {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      .question-text {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      .question-body {
+        padding: 32px;
+      }
+
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .option {
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .option-label {
+        display: block;
+        padding: 16px 20px;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .option:hover .option-label {
+        background: #f0f0f0;
+        border-color: #d0d0d0;
+      }
+
+      .option input[type="radio"]:checked + .option-label {
+        background: #333;
+        border-color: #333;
+        color: white;
+      }
+
+      .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 32px;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        border: 1px solid #e0e0e0;
+        background: white;
+        color: #333;
+      }
+
+      .btn:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .btn-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .error-message {
+        background: #fee;
+        color: #c53030;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 32px;
+        text-align: center;
+        font-weight: 500;
+        border: 1px solid #fed7d7;
+      }
+
+      .no-questions {
+        text-align: center;
+        color: #666;
+        padding: 80px 20px;
+      }
+
+      .no-questions-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+      }
+
+      .no-questions-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+      }
+
+      .no-questions-text {
+        font-size: 14px;
+        color: #666;
+      }
+
+      /* Loading Animation */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .loading-container {
+        text-align: center;
+        padding: 40px;
+      }
+
+      .loading-animation {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+      }
+
+      .book-loader {
+        position: absolute;
+        width: 60px;
+        height: 45px;
+        border: 3px solid #333;
+        border-radius: 3px;
+        background: white;
+        animation: bookFlip 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: #333;
+        border-radius: 2px;
+        animation: lineGrow 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::after {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 8px;
+        right: 20px;
+        height: 2px;
+        background: #666;
+        border-radius: 1px;
+        animation: lineGrow 1.5s infinite ease-in-out 0.2s;
+      }
+
+      .page-flip {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        width: 30px;
+        height: 45px;
+        background: #f8f8f8;
+        border: 3px solid #333;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+        transform-origin: left center;
+        animation: pageFlip 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        opacity: 0;
+        animation: floatLetters 2s infinite ease-in-out;
+      }
+
+      .floating-letters span {
+        display: inline-block;
+        margin: 0 2px;
+        animation: bounceLetters 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .floating-letters span:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .floating-letters span:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .floating-letters span:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .loading-subtext {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+
+      .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .loading-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #333;
+        animation: dotPulse 1.5s infinite ease-in-out;
+      }
+
+      .loading-dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .loading-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      /* Confirmation Popup */
+      .confirmation-overlay,
+      .unanswered-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .confirmation-overlay.active,
+      .unanswered-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .confirmation-box,
+      .unanswered-box {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .confirmation-title,
+      .unanswered-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 16px;
+      }
+
+      .confirmation-text,
+      .unanswered-text {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 24px;
+      }
+
+      .confirmation-actions,
+      .unanswered-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+      }
+
+      .confirmation-btn,
+      .unanswered-btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid #e0e0e0;
+        background: white;
+        color: #333;
+      }
+
+      .confirmation-btn:hover,
+      .unanswered-btn:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .confirmation-btn-primary,
+      .unanswered-btn-primary {
+        background: #333;
+        color: white;
+        border-color: #333;
+      }
+
+      .confirmation-btn-primary:hover,
+      .unanswered-btn-primary:hover {
+        background: #555;
+        border-color: #555;
+      }
+
+      @keyframes bookFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-25deg);
+        }
+      }
+
+      @keyframes pageFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-180deg);
+        }
+      }
+
+      @keyframes lineGrow {
+        0%,
+        100% {
+          width: 20px;
+          opacity: 0.3;
+        }
+        50% {
+          width: 35px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes floatLetters {
+        0%,
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-10px);
+        }
+      }
+
+      @keyframes bounceLetters {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes dotPulse {
+        0%,
+        100% {
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .auth-section {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .container {
+          padding: 0 10px;
+        }
+
+        .quiz-title {
+          font-size: 28px;
+        }
+
+        .question-text {
+          font-size: 18px;
+        }
+
+        .question-body {
+          padding: 24px;
+        }
+
+        .option-label {
+          padding: 14px 16px;
+          font-size: 15px;
+        }
+
+        .navigation {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .main {
+          padding: 20px 0;
+        }
+
+        .loading-animation {
+          width: 60px;
+          height: 60px;
+        }
+
+        .book-loader {
+          width: 45px;
+          height: 35px;
+        }
+
+        .page-flip {
+          left: 22px;
+          width: 23px;
+          height: 35px;
+        }
+
+        .confirmation-box,
+        .unanswered-box {
+          width: 95%;
+          padding: 20px;
+        }
+
+        .confirmation-actions,
+        .unanswered-actions {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .confirmation-btn,
+        .unanswered-btn {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .quiz-title {
+          font-size: 24px;
+        }
+
+        .question-body {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="main">
+      <div class="container">
+        <div class="quiz-header">
+          <h2 class="quiz-title">📚 Kuis: {{ course.name }}</h2>
+          <p class="quiz-subtitle">
+            Jawab semua pertanyaan dengan benar untuk mendapatkan skor terbaik!
+          </p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+          <strong>⚠️ {{ error }}</strong>
+        </div>
+        {% elif questions %}
+
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+          </div>
+          <div class="progress-text">
+            <span id="currentQuestion">1</span> dari
+            <span id="totalQuestions">{{ questions|length }}</span> pertanyaan
+          </div>
+        </div>
+
+        <div class="question-indicator" id="questionIndicator">
+          {% for q in questions %}
+          <div class="dot" data-question="{{ forloop.counter0 }}"></div>
+          {% endfor %}
+        </div>
+
+        <form method="post" id="quizForm">
+          {% csrf_token %} {% for q in questions %}
+          <div
+            class="quiz-card question-slide"
+            id="question{{ forloop.counter0 }}"
+            style="display: {% if forloop.first %}block{% else %}none{% endif %};"
+          >
+            <div class="question-header">
+              <div class="question-number">
+                Pertanyaan {{ forloop.counter }} dari {{ questions|length }}
+              </div>
+              <div class="question-text">{{ q.question }}</div>
+            </div>
+
+            <div class="question-body">
+              <div class="options-container">
+                {% for label, option in q.options.items %}
+                <div class="option">
+                  <input
+                    type="radio"
+                    id="q{{ forloop.parentloop.counter0 }}_{{ label }}"
+                    name="q{{ forloop.parentloop.counter0 }}"
+                    value="{{ label }}"
+                  />
+                  <label
+                    for="q{{ forloop.parentloop.counter0 }}_{{ label }}"
+                    class="option-label"
+                  >
+                    <span><strong>{{ label }}.</strong> {{ option }}</span>
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="navigation">
+            <div>
+              <button
+                type="button"
+                class="btn"
+                id="backToCoursesBtn"
+                onclick="showConfirmation()"
+              >
+                ⬅️
+              </button>
+              <button
+                type="button"
+                class="btn"
+                id="prevBtn"
+                onclick="changeQuestion(-1)"
+              >
+                ← Sebelumnya
+              </button>
+            </div>
+            <div>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="nextBtn"
+                onclick="changeQuestion(1)"
+              >
+                Selanjutnya →
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="submitBtn"
+                style="display: none"
+              >
+                📝 Kirim Jawaban
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {% else %}
+        <div class="no-questions">
+          <div class="no-questions-icon">📚</div>
+          <div class="no-questions-title">Tidak ada pertanyaan tersedia</div>
+          <div class="no-questions-text">
+            Silakan hubungi teacher untuk informasi lebih lanjut.
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-container">
+          <div class="loading-animation">
+            <div class="book-loader">
+              <div class="page-flip"></div>
+            </div>
+            <div class="floating-letters">
+              <span>Q</span>
+              <span>U</span>
+              <span>I</span>
+              <span>Z</span>
+            </div>
+          </div>
+          <div class="loading-text">Preparing Quiz...</div>
+          <div class="loading-subtext" id="loadingSubtext">
+            Getting ready for your learning adventure!
+          </div>
+          <div class="loading-dots">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation Popup for Back to Course List -->
+      <div class="confirmation-overlay" id="confirmationOverlay">
+        <div class="confirmation-box">
+          <div class="confirmation-title">Kenapa mau kembali?</div>
+          <div class="confirmation-text">
+            Progress kuis kamu akan hilang jika kembali ke daftar kursus.
+          </div>
+          <div class="confirmation-actions">
+            <button class="confirmation-btn" onclick="closeConfirmation()">
+              Ga jadi
+            </button>
+            <button
+              class="confirmation-btn confirmation-btn-primary"
+              onclick="confirmBackToCourses()"
+            >
+              Ya, kembali
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unanswered Questions Popup -->
+      <div class="unanswered-overlay" id="unansweredOverlay">
+        <div class="unanswered-box">
+          <div class="unanswered-title">Ada soal yang belum dijawab nih!</div>
+          <div class="unanswered-text">
+            Silahkan jawab dulu semua soal sebelum mengirim.
+          </div>
+          <div class="unanswered-actions">
+            <button
+              class="unanswered-btn unanswered-btn-primary"
+              onclick="goToUnansweredQuestion()"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingSubtext = document.getElementById("loadingSubtext");
+
+        const loadingMessages = [
+          "Getting ready for your learning adventure!",
+          "Preparing your personalized quiz...",
+          "Loading fun questions just for you!",
+          "Almost ready to test your knowledge!",
+          "Setting up your English challenge!",
+        ];
+
+        // Show loading overlay on page load
+        loadingOverlay.classList.add("active");
+        loadingSubtext.textContent = `Preparing {{ course.name }} quiz...`;
+
+        // Cycle through loading messages
+        let messageIndex = 0;
+        const messageInterval = setInterval(() => {
+          messageIndex = (messageIndex + 1) % loadingMessages.length;
+          loadingSubtext.textContent = loadingMessages[messageIndex];
+        }, 1000);
+
+        // Hide loading overlay after 2 seconds
+        setTimeout(() => {
+          clearInterval(messageInterval);
+          loadingOverlay.classList.remove("active");
+        }, 2000);
+      });
+
+      let currentQuestionIndex = 0;
+      const totalQuestions = {{ questions|length|default:0 }};
+
+      function updateProgress() {
+        const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+        document.getElementById("progressBar").style.width = progress + "%";
+        document.getElementById("currentQuestion").textContent =
+          currentQuestionIndex + 1;
+
+        // Update question indicators
+        document.querySelectorAll(".question-indicator .dot").forEach((dot, index) => {
+          dot.classList.remove("active", "completed");
+          if (index < currentQuestionIndex) {
+            dot.classList.add("completed");
+          } else if (index === currentQuestionIndex) {
+            dot.classList.add("active");
+          }
+        });
+      }
+
+      function showQuestion(index) {
+        // Hide all questions
+        document.querySelectorAll(".question-slide").forEach((slide) => {
+          slide.style.display = "none";
+        });
+
+        // Show current question
+        document.getElementById("question" + index).style.display = "block";
+
+        // Update navigation buttons
+        document.getElementById("prevBtn").style.display =
+          index === 0 ? "none" : "inline-flex";
+        document.getElementById("nextBtn").style.display =
+          index === totalQuestions - 1 ? "none" : "inline-flex";
+        document.getElementById("submitBtn").style.display =
+          index === totalQuestions - 1 ? "inline-flex" : "none";
+
+        updateProgress();
+      }
+
+      function changeQuestion(direction) {
+        const newIndex = currentQuestionIndex + direction;
+
+        if (newIndex >= 0 && newIndex < totalQuestions) {
+          currentQuestionIndex = newIndex;
+          showQuestion(currentQuestionIndex);
+        }
+      }
+
+      function showConfirmation() {
+        document.getElementById("confirmationOverlay").classList.add("active");
+      }
+
+      function closeConfirmation() {
+        document.getElementById("confirmationOverlay").classList.remove("active");
+      }
+
+      function confirmBackToCourses() {
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingSubtext = document.getElementById("loadingSubtext");
+        const loadingMessages = [
+          "Getting ready for your learning adventure!",
+          "Preparing your personalized quiz...",
+          "Loading fun questions just for you!",
+          "Almost ready to test your knowledge!",
+          "Setting up your English challenge!",
+        ];
+
+        // Hide confirmation and show loading overlay
+        document.getElementById("confirmationOverlay").classList.remove("active");
+        loadingOverlay.classList.add("active");
+        loadingSubtext.textContent = "Returning to course list...";
+
+        // Cycle through loading messages
+        let messageIndex = 0;
+        const messageInterval = setInterval(() => {
+          messageIndex = (messageIndex + 1) % loadingMessages.length;
+          loadingSubtext.textContent = loadingMessages[messageIndex];
+        }, 1000);
+
+        // Redirect after 2 seconds
+        setTimeout(() => {
+          clearInterval(messageInterval);
+          window.location.href = "{% url 'homework_list' %}";
+        }, 2000);
+      }
+
+      function showUnansweredPopup() {
+        document.getElementById("unansweredOverlay").classList.add("active");
+      }
+
+      function closeUnansweredPopup() {
+        document.getElementById("unansweredOverlay").classList.remove("active");
+      }
+
+      function goToUnansweredQuestion() {
+        // Find first unanswered question
+        for (let i = 0; i < totalQuestions; i++) {
+          if (!document.querySelector(`input[name="q${i}"]:checked`)) {
+            currentQuestionIndex = i;
+            showQuestion(currentQuestionIndex);
+            closeUnansweredPopup();
+            return;
+          }
+        }
+      }
+
+      // Initialize
+      if (totalQuestions > 0) {
+        showQuestion(0);
+      }
+
+      // Add smooth transitions when selecting options
+      document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.addEventListener("change", function () {
+          // Add a small delay then move to next question automatically
+          setTimeout(() => {
+            if (currentQuestionIndex < totalQuestions - 1) {
+              changeQuestion(1);
+            }
+          }, 300);
+        });
+      });
+
+      // Handle form submission
+      document.getElementById("quizForm").addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent default submission
+
+        const allAnswered = Array.from({ length: totalQuestions }, (_, i) => {
+          return document.querySelector(`input[name="q${i}"]:checked`);
+        }).every((answer) => answer !== null);
+
+        if (!allAnswered) {
+          showUnansweredPopup();
+        } else {
+          // Show loading overlay before submitting
+          const loadingOverlay = document.getElementById("loadingOverlay");
+          const loadingSubtext = document.getElementById("loadingSubtext");
+          const loadingMessages = [
+            "Submitting your answers...",
+            "Checking your responses...",
+            "Almost done with your quiz!",
+            "Preparing your results...",
+            "Finalizing your score!"
+          ];
+
+          loadingOverlay.classList.add("active");
+          loadingSubtext.textContent = "Submitting your answers...";
+
+          let messageIndex = 0;
+          const messageInterval = setInterval(() => {
+            messageIndex = (messageIndex + 1) % loadingMessages.length;
+            loadingSubtext.textContent = loadingMessages[messageIndex];
+          }, 1000);
+
+          // Submit form after 2 seconds
+          setTimeout(() => {
+            clearInterval(messageInterval);
+            document.getElementById("quizForm").submit();
+          }, 2000);
+        }
+      });
+    </script>
+  </body>
+</html>

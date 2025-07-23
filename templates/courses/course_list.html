@@ -1,0 +1,981 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Course - EnglishKids LMS</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.ico' %}"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: #fafafa;
+        min-height: 100vh;
+        display: flex;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: white;
+        border-right: 1px solid #e8e8e8;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.mobile-hidden {
+        transform: translateX(-100%);
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 101;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 8px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      }
+
+      .mobile-menu-toggle:hover {
+        background: #f8f8f8;
+      }
+
+      .mobile-menu-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #1a1a1a;
+        margin: 4px 0;
+        transition: 0.3s;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(1) {
+        transform: rotate(-45deg) translate(-4px, 4px);
+      }
+
+      .mobile-menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.active span:nth-child(3) {
+        transform: rotate(45deg) translate(-4px, -4px);
+      }
+
+      .mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .mobile-overlay.active {
+        opacity: 1;
+      }
+
+      .sidebar-header {
+        padding: 24px 20px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        text-decoration: none;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "📚";
+        font-size: 20px;
+      }
+
+      .auth-section {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 24px;
+      }
+
+      .user-greeting {
+        font-size: 14px;
+        color: #666;
+        font-weight: 400;
+      }
+
+      .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .menu-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        color: #666;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        position: relative;
+      }
+
+      .menu-item:hover {
+        background: #f8f8f8;
+        color: #1a1a1a;
+      }
+
+      .menu-item-primary {
+        color: #1a1a1a;
+        font-weight: 600;
+        background: #f8f8f8;
+      }
+
+      .menu-item-primary:hover {
+        background: #f0f0f0;
+      }
+
+      .menu-item-ghost {
+        color: #666;
+        font-weight: 500;
+        margin-top: auto;
+      }
+
+      .menu-item-ghost:hover {
+        color: #dc2626;
+        background: #fef2f2;
+      }
+
+      .menu-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .menu-text {
+        flex: 1;
+      }
+
+      .divider {
+        height: 1px;
+        background: #f0f0f0;
+        margin: 16px 0;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 40px 0;
+        margin-left: 240px;
+        background: #fafafa;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 48px;
+        color: #333;
+      }
+
+      .header h2 {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+
+      .header p {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 24px;
+        margin-top: 32px;
+      }
+
+      .course-card {
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .course-card:hover {
+        border-color: #d0d0d0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+      }
+
+      .course-header {
+        background: #f8f9fa;
+        padding: 24px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .course-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+        display: block;
+      }
+
+      .course-name {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+
+      .course-teacher {
+        font-size: 14px;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .course-body {
+        padding: 24px;
+      }
+
+      .course-stats {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .stat-icon {
+        font-size: 16px;
+      }
+
+      .course-description {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 24px;
+      }
+
+      .course-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: 1px solid #e8e8e8;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-align: center;
+        justify-content: center;
+        background: white;
+        color: #1a1a1a;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .btn-primary {
+        background: #1a1a1a;
+        color: white;
+        border-color: #1a1a1a;
+        flex: 1;
+      }
+
+      .btn-primary:hover {
+        background: #333;
+        border-color: #333;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: #1a1a1a;
+        border: 1px solid #e8e8e8;
+        flex: 1;
+      }
+
+      .btn-outline:hover {
+        background: #f8f8f8;
+        border-color: #d0d0d0;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #666;
+      }
+
+      .empty-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.7;
+      }
+
+      .empty-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+
+      .empty-description {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .progress-bar {
+        height: 3px;
+        background: #f0f0f0;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #1a1a1a;
+        width: 65%;
+        transition: width 0.3s ease;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        background: #f0f0f0;
+        color: #666;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 8px;
+      }
+
+      /* Loading Animation */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .loading-container {
+        text-align: center;
+        padding: 40px;
+      }
+
+      .loading-animation {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+      }
+
+      .book-loader {
+        position: absolute;
+        width: 60px;
+        height: 45px;
+        border: 3px solid #1a1a1a;
+        border-radius: 3px;
+        background: white;
+        animation: bookFlip 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        height: 3px;
+        background: #1a1a1a;
+        border-radius: 2px;
+        animation: lineGrow 1.5s infinite ease-in-out;
+      }
+
+      .book-loader::after {
+        content: "";
+        position: absolute;
+        top: 18px;
+        left: 8px;
+        right: 20px;
+        height: 2px;
+        background: #666;
+        border-radius: 1px;
+        animation: lineGrow 1.5s infinite ease-in-out 0.2s;
+      }
+
+      .page-flip {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        width: 30px;
+        height: 45px;
+        background: #f8f8f8;
+        border: 3px solid #1a1a1a;
+        border-left: none;
+        border-radius: 0 3px 3px 0;
+        transform-origin: left center;
+        animation: pageFlip 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        font-weight: 600;
+        color: #1a1a1a;
+        opacity: 0;
+        animation: floatLetters 2s infinite ease-in-out;
+      }
+
+      .floating-letters span {
+        display: inline-block;
+        margin: 0 2px;
+        animation: bounceLetters 1.5s infinite ease-in-out;
+      }
+
+      .floating-letters span:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .floating-letters span:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .floating-letters span:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .floating-letters span:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+
+      @keyframes bookFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-25deg);
+        }
+      }
+
+      @keyframes pageFlip {
+        0%,
+        100% {
+          transform: rotateY(0deg);
+        }
+        50% {
+          transform: rotateY(-180deg);
+        }
+      }
+
+      @keyframes lineGrow {
+        0%,
+        100% {
+          width: 20px;
+          opacity: 0.3;
+        }
+        50% {
+          width: 35px;
+          opacity: 1;
+        }
+      }
+
+      @keyframes floatLetters {
+        0%,
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(0px);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-10px);
+        }
+      }
+
+      @keyframes bounceLetters {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+      }
+
+      .loading-subtext {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+
+      .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #1a1a1a;
+        animation: dotPulse 1.5s infinite ease-in-out;
+      }
+
+      .dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+      .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes dotPulse {
+        0%,
+        100% {
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+      }
+
+      .btn.loading {
+        pointer-events: none;
+        color: transparent;
+      }
+
+      .btn.loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 16px;
+        height: 16px;
+        border: 2px solid transparent;
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .mobile-menu-toggle {
+          display: block;
+        }
+
+        .mobile-overlay.active {
+          display: block;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .main {
+          margin-left: 0;
+        }
+
+        .courses-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .header h2 {
+          font-size: 28px;
+        }
+
+        .course-card {
+          margin: 0 10px;
+        }
+
+        .course-actions {
+          flex-direction: column;
+        }
+
+        .loading-animation {
+          width: 60px;
+          height: 60px;
+        }
+
+        .book-loader {
+          width: 45px;
+          height: 35px;
+        }
+
+        .page-flip {
+          left: 22px;
+          width: 23px;
+          height: 35px;
+        }
+
+        .sidebar-header {
+          padding: 16px 20px;
+        }
+
+        .auth-section {
+          padding: 16px 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h2 {
+          font-size: 24px;
+        }
+
+        .course-body {
+          padding: 20px;
+        }
+
+        .main {
+          padding: 20px 0;
+          padding-top: 80px;
+        }
+
+        .sidebar {
+          width: 280px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/" class="logo">EnglishKids</a>
+      </div>
+
+      <div class="auth-section">
+        {% if user.is_authenticated %}
+        <div class="user-info">
+          <span class="user-greeting">Hello,</span>
+          <span class="user-name">{{ user.username }}</span>
+        </div>
+
+        <a href="{% url 'dashboard_redirect' %}" class="menu-item">
+          <span class="menu-icon">🏠</span>
+          <span class="menu-text">Dashboard</span>
+        </a>
+
+        <a
+          href="{% url 'course_redirect' %}"
+          class="menu-item menu-item-primary"
+        >
+          <span class="menu-icon">📖</span>
+          <span class="menu-text">Courses</span>
+        </a>
+
+        <a href="{% url 'homework_list' %}" class="menu-item">
+          <span class="menu-icon">📝</span>
+          <span class="menu-text">Homework</span>
+        </a>
+
+        <a href="{% url 'profile' %}" class="menu-item">
+          <span class="menu-icon">🙂</span>
+          <span class="menu-text">Profile</span>
+        </a>
+
+        {% if user.is_superuser %}
+        <a href="/admin/" class="menu-item">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-text">Admin</span>
+        </a>
+        {% endif %}
+
+        <form
+          action="{% url 'logout' %}"
+          method="post"
+          style="display: contents"
+        >
+          {% csrf_token %}
+          <button type="submit" class="menu-item menu-item-ghost">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">Logout</span>
+          </button>
+        </form>
+
+        {% else %}
+        <a href="{% url 'login' %}" class="menu-item menu-item-primary">
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Login</span>
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+        <div class="header">
+          <h2>Daftar Course</h2>
+          <p>
+            Pilih course yang ingin kamu pelajari dan mulai petualangan belajar
+            bahasa Inggris!
+          </p>
+        </div>
+
+        {% if courses %}
+        <div class="courses-grid">
+          {% for course in courses %}
+          <div class="course-card">
+            <div class="course-header">
+              <span class="course-icon">📚</span>
+              <div class="course-name">{{ course.name }}</div>
+              <div class="course-teacher">
+                <span>👨‍🏫</span>
+                <span>{{ course.teacher.username }}</span>
+                <span class="badge">Teacher</span>
+              </div>
+            </div>
+
+            <div class="course-body">
+              <div class="course-actions">
+                <a
+                  href="{% url 'quiz_generate' course.id %}"
+                  class="btn btn-primary quiz-btn"
+                  data-course-name="{{ course.name }}"
+                >
+                  Mulai Kuis
+                </a>
+                <a href="#" class="btn btn-outline"> Preview </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">📚</div>
+          <div class="empty-title">Belum Ada Course</div>
+          <div class="empty-description">
+            Course belum tersedia. Silakan hubungi teacher untuk informasi lebih
+            lanjut.
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-container">
+        <div class="loading-animation">
+          <div class="book-loader">
+            <div class="page-flip"></div>
+          </div>
+          <div class="floating-letters">
+            <span>Q</span>
+            <span>U</span>
+            <span>I</span>
+            <span>Z</span>
+          </div>
+        </div>
+        <div class="loading-text">Preparing Quiz...</div>
+        <div class="loading-subtext" id="loadingSubtext">
+          Getting ready for your learning adventure!
+        </div>
+        <div class="loading-dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Mobile Menu Toggle
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const sidebar = document.getElementById("sidebar");
+        const mobileOverlay = document.getElementById("mobileOverlay");
+        const quizButtons = document.querySelectorAll(".quiz-btn");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingSubtext = document.getElementById("loadingSubtext");
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+          mobileMenuToggle.classList.toggle("active");
+          sidebar.classList.toggle("mobile-open");
+          mobileOverlay.classList.toggle("active");
+        }
+
+        function closeMobileMenu() {
+          mobileMenuToggle.classList.remove("active");
+          sidebar.classList.remove("mobile-open");
+          mobileOverlay.classList.remove("active");
+        }
+
+        mobileMenuToggle.addEventListener("click", toggleMobileMenu);
+        mobileOverlay.addEventListener("click", closeMobileMenu);
+
+        // Close mobile menu when clicking sidebar links
+        const sidebarLinks = sidebar.querySelectorAll(".menu-item");
+        sidebarLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+              closeMobileMenu();
+            }
+          });
+        });
+
+        // Close mobile menu on window resize
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 768) {
+            closeMobileMenu();
+          }
+        });
+
+        // Quiz loading functionality
+        const loadingMessages = [
+          "Getting ready for your learning adventure!",
+          "Preparing your personalized quiz...",
+          "Loading fun questions just for you!",
+          "Almost ready to test your knowledge!",
+          "Setting up your English challenge!",
+        ];
+
+        quizButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            // Show loading
+            loadingOverlay.classList.add("active");
+            this.classList.add("loading");
+
+            // Update loading text
+            loadingSubtext.textContent = `Preparing ${this.dataset.courseName} quiz...`;
+
+            // Cycle through loading messages
+            let messageIndex = 0;
+            setInterval(() => {
+              messageIndex = (messageIndex + 1) % loadingMessages.length;
+              loadingSubtext.textContent = loadingMessages[messageIndex];
+            }, 1000);
+            // Navigation happens naturally via href
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
