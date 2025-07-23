@@ -1,0 +1,7 @@
+gunicorn
+psycopg2-binary
+django
+pillow
+google-genai
+django-recaptcha
+mysqlclient
