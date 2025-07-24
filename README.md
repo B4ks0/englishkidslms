@@ -46,8 +46,8 @@
 1. **Clone repository**
 
    ```bash
-   git clone https://github.com/B4ks0/lms_project.git
-   cd lms_project
+   git clone https://github.com/B4ks0/englishkidslms.git
+   cd englishkidslms
    ```
 
 2. **Buat virtual environment & install dependencies**
